@@ -5,6 +5,9 @@ substitutions:
 esphome:
   name: ${device_name}
   friendly_name: ${friendly_name}
+  project:
+    name: arsmarthome.m5-1g
+    version: "1.0.0"
 
 esp32:
   board: esp32dev
@@ -59,6 +62,12 @@ light:
     id: led1
     name: "Touch LED"
     output: relay_led
+
+  - platform: status_led
+    name: "WiFi Status"
+    pin:
+      number: GPIO5
+      inverted: true
 
 binary_sensor:
   - platform: gpio
