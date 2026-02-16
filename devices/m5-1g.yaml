@@ -1,0 +1,51 @@
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+switch:
+  - platform: gpio
+    id: relay_1
+    name: "Switch 1"
+    pin: GPIO23
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - light.turn_on: led1
+    on_turn_off:
+      - light.turn_off: led1
+
+output:
+  - platform: ledc
+    pin: GPIO18
+    frequency: 1000 Hz
+    id: pwm_output
+
+  - platform: gpio
+    id: relay_led
+    pin: GPIO19
+
+light:
+  - platform: monochromatic
+    output: pwm_output
+    name: "Backlight LEDs"
+
+  - platform: binary
+    id: led1
+    name: "Touch LED"
+    output: relay_led
+
+  - platform: status_led
+    name: "WiFi Status"
+    pin:
+      number: GPIO5
+      inverted: true
+
+binary_sensor:
+  - platform: gpio
+    id: button_1
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - switch.toggle: relay_1
