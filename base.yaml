@@ -3,4 +3,8 @@ logger:
 ota:
   platform: esphome
 
+api:
+  encryption:
+    key: "k7jWSmh6cD5rjxN5w7vswWkLcyQVoTTWNdCm8WwR7cY="
+
 captive_portal:
