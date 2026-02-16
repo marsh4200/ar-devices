@@ -1,12 +1,9 @@
 logger:
 
 api:
-  # API encryption key stays on customer device YAML
-  encryption:
-    key: !secret api_key
+ 
 
 ota:
   platform: esphome
-  password: !secret ota_password
 
 captive_portal:
