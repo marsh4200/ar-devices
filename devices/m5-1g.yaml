@@ -3,6 +3,7 @@ substitutions:
 
 esphome:
   name: ${device_name}
+  name_add_mac_suffix: true
   project:
     name: "AR Smart Home.M5-1G"
     version: "1.0.0"
