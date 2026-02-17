@@ -1,10 +1,8 @@
 substitutions:
   device_name: m5-1g-1
-  friendly_name: "M5 1G 1"
 
 esphome:
   name: ${device_name}
-  friendly_name: ${friendly_name}
   project:
     name: "AR Smart Home.M5-1G"
     version: "1.0.0"
