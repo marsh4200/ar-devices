@@ -7,6 +7,16 @@ esphome:
   project:
     name: "AR Smart Home.M5-1G"
     version: "1.0.0"
+  on_boot:
+    priority: 600
+    then:
+      - if:
+          condition:
+            switch.is_on: relay_1
+          then:
+            - light.turn_on: led1
+          else:
+            - light.turn_off: led1
 
 esp32:
   board: esp32dev
@@ -24,6 +34,7 @@ wifi:
 api:
   encryption:
     key: ""
+  reboot_timeout: 0s
 
 ota:
   platform: esphome
@@ -54,8 +65,9 @@ output:
 
 light:
   - platform: monochromatic
-    output: pwm_output
+    id: backlight_leds
     name: "Backlight LEDs"
+    output: pwm_output
 
   - platform: binary
     id: led1
