@@ -39,23 +39,6 @@ esp32:
 
 logger:
 
-wifi:
-  ssid: ""
-  password: ""
-  fast_connect: true
-  reboot_timeout: 0s
-
-api:
-  encryption:
-    key: ""
-  reboot_timeout: 0s
-
-ota:
-  platform: esphome
-  password: ""
-
-captive_portal:
-
 switch:
   - platform: gpio
     id: relay_1
