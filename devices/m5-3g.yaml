@@ -1,1 +1,150 @@
+substitutions:
+  device_name: m5-3g
 
+esphome:
+  name: ${device_name}
+  name_add_mac_suffix: true
+  project:
+    name: "AR Smart Home.M5-3G"
+    version: "1.0.0"
+  on_boot:
+    priority: 600
+    then:
+      - if:
+          condition:
+            switch.is_on: relay_1
+          then:
+            - light.turn_on: led1
+          else:
+            - light.turn_off: led1
+      - if:
+          condition:
+            switch.is_on: relay_2
+          then:
+            - light.turn_on: led2
+          else:
+            - light.turn_off: led2
+      - if:
+          condition:
+            switch.is_on: relay_3
+          then:
+            - light.turn_on: led3
+          else:
+            - light.turn_off: led3
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+wifi:
+  ssid: ""
+  password: ""
+  fast_connect: true
+  reboot_timeout: 0s
+
+api:
+  encryption:
+    key: ""
+  reboot_timeout: 0s
+
+ota:
+  platform: esphome
+  password: ""
+
+captive_portal:
+
+switch:
+  - platform: gpio
+    id: relay_1
+    name: "Lights"
+    pin: GPIO23
+
+  - platform: gpio
+    id: relay_2
+    name: "lounge"
+    pin: GPIO22
+    on_turn_on:
+      - light.turn_on: led2
+    on_turn_off:
+      - light.turn_off: led2
+
+  - platform: gpio
+    id: relay_3
+    name: "Island"
+    pin: GPIO19
+    on_turn_on:
+      - light.turn_on: led3
+    on_turn_off:
+      - light.turn_off: led3
+
+output:
+  - platform: gpio
+    id: led1_output
+    pin: GPIO16        # Top LED
+
+  - platform: gpio
+    id: led2_output
+    pin: GPIO21        # Middle LED
+
+  - platform: gpio
+    id: led3_output
+    pin: GPIO17        # Bottom LED
+
+  - platform: ledc
+    pin: GPIO18        # Backlight PWM
+    frequency: 1000 Hz
+    id: pwm_output
+
+light:
+  - platform: binary
+    id: led1
+    name: "Touch LED Top"
+    output: led1_output
+
+  - platform: binary
+    id: led2
+    name: "Touch LED Middle"
+    output: led2_output
+
+  - platform: binary
+    id: led3
+    name: "Touch LED Bottom"
+    output: led3_output
+
+  - platform: monochromatic
+    output: pwm_output
+    name: "Backlight LEDs"
+
+  - platform: status_led
+    name: "WiFi Status"
+    pin:
+      number: GPIO5
+      inverted: true
+
+binary_sensor:
+  - platform: gpio
+    id: top_button
+    pin:
+      number: GPIO4
+      mode: INPUT_PULLUP
+    on_press:
+      - switch.toggle: relay_1
+
+  - platform: gpio
+    id: middle_button
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+    on_press:
+      - switch.toggle: relay_3
+
+  - platform: gpio
+    id: bottom_button
+    pin:
+      number: GPIO15
+      mode: INPUT_PULLUP
+    on_press:
+      - switch.toggle: relay_2
