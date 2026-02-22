@@ -1,0 +1,91 @@
+substitutions:
+  device_name: m5-2g
+
+esphome:
+  name: ${device_name}
+  name_add_mac_suffix: true
+  project:
+    name: "AR Smart Home.M5-2G"
+    version: "1.0.0"
+  on_boot:
+    priority: 600
+    then:
+      - if:
+          condition:
+            switch.is_on: relay_1
+          then:
+            - light.turn_on: led2
+          else:
+            - light.turn_off: led2
+      - if:
+          condition:
+            switch.is_on: relay_2
+          then:
+            - light.turn_on: led2
+          else:
+            - light.turn_off: led2
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+switch:
+  - platform: gpio
+    id: relay_1
+    name: "Gaming Lights"
+    pin: GPIO23
+
+  - platform: gpio
+    id: relay_2
+    name: "2wayled"
+    pin: GPIO19
+    on_turn_on:
+      - light.turn_on: led2
+    on_turn_off:
+      - light.turn_off: led2
+
+output:
+  - platform: ledc
+    pin: GPIO18
+    frequency: 1000 Hz
+    id: pwm_output
+
+  - platform: gpio
+    id: relay_4
+    pin: GPIO22
+
+light:
+  - platform: monochromatic
+    output: pwm_output
+    name: "Backlight LEDs"
+
+  - platform: binary
+    id: led2
+    name: "Touch LED Bottom"
+    output: relay_4
+
+  - platform: status_led
+    name: "WiFi Status"
+    pin:
+      number: GPIO5
+      inverted: true
+
+binary_sensor:
+  - platform: gpio
+    id: top_button
+    pin:
+      number: GPIO4
+      mode: INPUT_PULLUP
+    on_press:
+      - switch.toggle: relay_1
+
+  - platform: gpio
+    id: bottom_button
+    pin:
+      number: GPIO15
+      mode: INPUT_PULLUP
+    on_press:
+      - switch.toggle: relay_2
