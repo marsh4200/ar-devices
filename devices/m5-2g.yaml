@@ -33,12 +33,12 @@ logger:
 switch:
   - platform: gpio
     id: relay_1
-    name: "Gaming Lights"
+    name: "Switch 1"
     pin: GPIO23
 
   - platform: gpio
     id: relay_2
-    name: "2wayled"
+    name: "Switch 2"
     pin: GPIO19
     on_turn_on:
       - light.turn_on: led2
