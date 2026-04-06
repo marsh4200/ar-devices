@@ -41,4 +41,4 @@ packages:
     url: https://github.com/marsh4200/ar-devices
     ref: main
     file: devices/dualr3lite.yaml
-    refresh: 5min
+    refresh: 0min
