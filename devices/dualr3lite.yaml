@@ -1,0 +1,117 @@
+esphome:
+  project:
+    name: "AR Smart Home.DUALR3LITE"
+    version: "1.0.0"
+
+esp32:
+  variant: esp32
+
+logger:
+  level: INFO
+
+# ---------------------------
+# SENSORS
+# ---------------------------
+sensor:
+  - platform: wifi_signal
+    name: "RSSI"
+    id: sensor_rssi
+    update_interval: 90s
+    entity_category: diagnostic
+
+  - platform: uptime
+    name: "Uptime"
+    id: sensor_uptime
+    update_interval: 300s
+    entity_category: diagnostic
+
+# ---------------------------
+# RESTART BUTTON
+# ---------------------------
+button:
+  - platform: restart
+    name: "Restart"
+    id: button_restart
+
+# ---------------------------
+# STATUS LED
+# ---------------------------
+light:
+  - platform: status_led
+    id: led_status
+    name: "Status LED"
+    pin:
+      number: GPIO13
+      inverted: true
+    internal: true
+
+# ---------------------------
+# RELAYS (RESTORE LAST STATE)
+# ---------------------------
+switch:
+  - platform: gpio
+    name: "Relay 1"
+    pin: GPIO27
+    id: relay_1
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
+    name: "Relay 2"
+    pin: GPIO14
+    id: relay_2
+    restore_mode: RESTORE_DEFAULT_OFF
+
+# ---------------------------
+# INPUTS / BUTTONS
+# ---------------------------
+binary_sensor:
+  - platform: gpio
+    name: "Main Button"
+    id: sensor_button
+    pin:
+      number: GPIO0
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    disabled_by_default: true
+    filters:
+      - delayed_on: 50ms
+    on_press:
+      - switch.toggle: relay_1
+
+  - platform: gpio
+    name: "Switch 1 Input"
+    pin:
+      number: GPIO32
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - switch.turn_on: relay_1
+    on_release:
+      - switch.turn_off: relay_1
+
+  - platform: gpio
+    name: "Switch 2 Input"
+    pin:
+      number: GPIO33
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - switch.turn_on: relay_2
+    on_release:
+      - switch.turn_off: relay_2
+
+# ---------------------------
+# PREFERENCES
+# ---------------------------
+preferences:
+  flash_write_interval: 1min
