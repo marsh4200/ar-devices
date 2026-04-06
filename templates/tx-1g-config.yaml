@@ -1,1 +1,39 @@
+############################################
+# 🔧 AR SMART HOME – TX-1G SETUP
+# 👉 EDIT BEFORE FLASHING
+############################################
 
+substitutions:
+  device_name: "PUT_YOURE_DEVICE_NAME_HERE"
+  friendly_name: "PUT_FRIENDLY_NAME_HERE"
+
+############################################
+# 📡 WIFI SETTINGS
+############################################
+wifi:
+  ssid: "PUT_YOURE_WIFI_NAME_HERE"
+  password: "PUT_WIFI_PASSWORD_HERE"
+
+############################################
+# 🔐 API & OTA SETTINGS
+############################################
+api:
+
+ota:
+  platform: esphome
+
+############################################
+# ⚙️ DEVICE NAME
+############################################
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+############################################
+# 📦 LOAD DEVICE PACKAGE
+############################################
+packages:
+  device:
+    url: https://github.com/marsh4200/ar-devices
+    ref: main
+    file: devices/tx-1g.yaml
