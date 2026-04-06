@@ -1,9 +1,4 @@
-substitutions:
-  device_name: m5-2g
-
 esphome:
-  name: ${device_name}
-  name_add_mac_suffix: true
   project:
     name: "AR Smart Home.M5-2G"
     version: "1.0.0"
@@ -32,6 +27,9 @@ esp32:
 
 logger:
 
+# ---------------------------
+# RELAYS
+# ---------------------------
 switch:
   - platform: gpio
     id: relay_1
@@ -47,6 +45,9 @@ switch:
     on_turn_off:
       - light.turn_off: led2
 
+# ---------------------------
+# OUTPUTS
+# ---------------------------
 output:
   - platform: ledc
     pin: GPIO18
@@ -57,6 +58,9 @@ output:
     id: relay_4
     pin: GPIO22
 
+# ---------------------------
+# LIGHTS
+# ---------------------------
 light:
   - platform: monochromatic
     output: pwm_output
@@ -73,6 +77,9 @@ light:
       number: GPIO5
       inverted: true
 
+# ---------------------------
+# BUTTONS
+# ---------------------------
 binary_sensor:
   - platform: gpio
     id: top_button
