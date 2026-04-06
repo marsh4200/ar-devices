@@ -1,6 +1,6 @@
 esphome:
   project:
-    name: "AR Smart Home.M5-1G"
+    name: "AR Smart Home.M5-1GANG"
     version: "1.0.0"
   on_boot:
     priority: 600
