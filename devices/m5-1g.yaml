@@ -1,9 +1,4 @@
-substitutions:
-  device_name: m5-1g-1
-
 esphome:
-  name: ${device_name}
-  name_add_mac_suffix: true
   project:
     name: "AR Smart Home.M5-1G"
     version: "1.0.0"
@@ -25,34 +20,23 @@ esp32:
 
 logger:
 
-wifi:
-  ssid: ""
-  password: ""
-  fast_connect: true
-  reboot_timeout: 0s
-
-api:
-  encryption:
-    key: ""
-  reboot_timeout: 0s
-
-ota:
-  platform: esphome
-  password: ""
-
-captive_portal:
-
+# ---------------------------
+# RELAY (RESTORE LAST STATE)
+# ---------------------------
 switch:
   - platform: gpio
     id: relay_1
     name: "Switch 1"
     pin: GPIO23
-    restore_mode: RESTORE_DEFAULT_OFF
+    restore_mode: RESTORE_DEFAULT_OFF   # ← restores last state (default OFF if none)
     on_turn_on:
       - light.turn_on: led1
     on_turn_off:
       - light.turn_off: led1
 
+# ---------------------------
+# OUTPUTS
+# ---------------------------
 output:
   - platform: ledc
     pin: GPIO18
@@ -63,6 +47,9 @@ output:
     id: relay_led
     pin: GPIO19
 
+# ---------------------------
+# LIGHTS
+# ---------------------------
 light:
   - platform: monochromatic
     id: backlight_leds
@@ -80,6 +67,9 @@ light:
       number: GPIO5
       inverted: true
 
+# ---------------------------
+# BUTTON
+# ---------------------------
 binary_sensor:
   - platform: gpio
     id: button_1
@@ -89,3 +79,9 @@ binary_sensor:
       inverted: true
     on_press:
       - switch.toggle: relay_1
+
+# ---------------------------
+# PREFERENCES (REQUIRED)
+# ---------------------------
+preferences:
+  flash_write_interval: 1min
