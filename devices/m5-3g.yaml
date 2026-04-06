@@ -42,7 +42,7 @@ logger:
 switch:
   - platform: gpio
     id: relay_1
-    name: "Lights"
+    name: "Switch 1"
     pin: GPIO23
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -52,7 +52,7 @@ switch:
 
   - platform: gpio
     id: relay_2
-    name: "Lounge"
+    name: "Switch 2"
     pin: GPIO22
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
@@ -62,7 +62,7 @@ switch:
 
   - platform: gpio
     id: relay_3
-    name: "Island"
+    name: "Switch 3"
     pin: GPIO19
     restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
