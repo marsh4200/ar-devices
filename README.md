@@ -119,5 +119,5 @@ Your device is now ready and integrated with Home Assistant.
 
 ---
 
-# 🔥 AR Smart Home
+# 🔥 AR Smart Home (Pty) Ltd
 Built for simple, scalable, and professional smart home installations.
