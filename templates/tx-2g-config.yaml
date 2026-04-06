@@ -39,4 +39,4 @@ packages:
     url: https://github.com/marsh4200/ar-devices
     ref: main
     file: devices/tx-2g.yaml
-    refresh: 5min
+    refresh: 0min
