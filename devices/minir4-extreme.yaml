@@ -1,0 +1,91 @@
+esphome:
+  project:
+    name: "AR Smart Home.MINIR4-EXTREME"
+    version: "1.0.0"
+
+esp32:
+  variant: esp32
+  framework:
+    type: arduino
+
+logger:
+
+# ---------------------------
+# STATUS LED
+# ---------------------------
+status_led:
+  pin:
+    number: GPIO19
+    inverted: true
+
+# ---------------------------
+# RELAY OUTPUT
+# ---------------------------
+output:
+  - platform: gpio
+    pin: GPIO26
+    id: relay_1
+
+# ---------------------------
+# MAIN LIGHT (RELAY)
+# ---------------------------
+light:
+  - platform: binary
+    id: light_1
+    name: "Relay"
+    icon: mdi:light-switch
+    output: relay_1
+    restore_mode: RESTORE_DEFAULT_OFF
+
+# ---------------------------
+# BUTTON (DEVICE)
+# ---------------------------
+binary_sensor:
+  - platform: gpio
+    id: button
+    pin:
+      number: GPIO0
+      inverted: true
+    filters:
+      - delayed_off: 50ms
+    on_press:
+      - light.toggle: light_1
+
+# ---------------------------
+# EXTERNAL SWITCH (S1)
+# ---------------------------
+  - platform: gpio
+    id: s1
+    name: "Switch Input"
+    pin:
+      number: GPIO27
+      inverted: true
+    filters:
+      - delayed_off: 50ms
+    on_press:
+      - light.turn_on: light_1
+    on_release:
+      - light.turn_off: light_1
+
+# ---------------------------
+# DIAGNOSTICS
+# ---------------------------
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 90s
+    entity_category: diagnostic
+
+  - platform: uptime
+    name: "Uptime"
+    update_interval: 300s
+    entity_category: diagnostic
+
+text_sensor:
+  - platform: wifi_info
+    ssid:
+      name: "SSID"
+    ip_address:
+      name: "IP Address"
+    dns_address:
+      name: "DNS"
