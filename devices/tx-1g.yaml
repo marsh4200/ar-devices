@@ -1,6 +1,6 @@
 esphome:
   project:
-    name: "AR Smart Home.TX-1G"
+    name: "AR Smart Home.TX-1GANG"
     version: "1.0.0"
 
 esp8266:
