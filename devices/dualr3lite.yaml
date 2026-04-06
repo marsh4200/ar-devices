@@ -77,8 +77,22 @@ binary_sensor:
     disabled_by_default: true
     filters:
       - delayed_on: 50ms
-    on_press:
-      - switch.toggle: relay_1
+
+    on_multi_click:
+      # 🔹 SINGLE CLICK → Relay 1
+      - timing:
+          - ON for at most 500ms
+          - OFF for at least 200ms
+        then:
+          - switch.toggle: relay_1
+
+      # 🔹 DOUBLE CLICK → Relay 2
+      - timing:
+          - ON for at most 500ms
+          - OFF for at most 200ms
+          - ON for at most 500ms
+        then:
+          - switch.toggle: relay_2
 
   - platform: gpio
     name: "Switch 1 Input"
