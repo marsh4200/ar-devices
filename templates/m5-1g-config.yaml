@@ -4,17 +4,24 @@
 ############################################
 
 substitutions:
-  device_name: "PUT_YOURE_DEVICE_NAME_HERE"
+  device_name: "PUT_YOUR_DEVICE_NAME_HERE"
   friendly_name: "PUT_FRIENDLY_NAME_HERE"
+
+############################################
+# ⚙️ DEVICE NAME
+############################################
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
 
 ############################################
 # 📡 WIFI SETTINGS
 ############################################
 wifi:
-  ssid: "PUT_YOURE+ota:
-  platform: "PUT_YOURE_WIFI_NAME_HERE"
+  ssid: "PUT_YOUR_WIFI_NAME_HERE"
   password: "PUT_WIFI_PASSWORD_HERE"
   reboot_timeout: 0s
+
 ############################################
 # 🔐 API & OTA SETTINGS
 ############################################
@@ -25,13 +32,6 @@ api:
 
 ota:
   platform: esphome
-
-############################################
-# ⚙️ DEVICE NAME
-############################################
-esphome:
-  name: ${device_name}
-  friendly_name: ${friendly_name}
 
 ############################################
 # 📦 LOAD DEVICE PACKAGE
