@@ -9,6 +9,7 @@ This repository contains ready-to-use ESPHome configurations and packages for AR
 - DualR3 Lite
 - MiniR4-Extreme
 - 4ch-Pro-R3
+- MiniR2
 
 ---
 
@@ -32,6 +33,7 @@ Go to the **templates folder** and download the correct config:
 - dualr3lite-config.yaml
 - minir4-extreme-config.yaml
 - 4ch-pro-r3-config.yaml
+- minir2-config.yaml
 
 ---
 
