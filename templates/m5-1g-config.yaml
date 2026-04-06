@@ -14,13 +14,14 @@ wifi:
   ssid: "PUT_YOURE+ota:
   platform: "PUT_YOURE_WIFI_NAME_HERE"
   password: "PUT_WIFI_PASSWORD_HERE"
-
+  reboot_timeout: 0s
 ############################################
 # 🔐 API & OTA SETTINGS
 ############################################
 api:
   encryption:
     key: "PUT_API_KEY_HERE"
+  reboot_timeout: 0s  
 
 ota:
   platform: esphome
