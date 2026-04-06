@@ -7,6 +7,7 @@ This repository contains ready-to-use ESPHome configurations and packages for AR
 - TX Series (1G / 2G / 3G)
 - POWR320
 - DualR3 Lite
+- MiniR4-Extreme
 
 ---
 
@@ -27,7 +28,8 @@ Go to the **templates folder** and download the correct config:
 - tx-2g-config.yaml  
 - tx-3g-config.yaml
 - powr320-config.yaml
-- dualr3lite-config.yaml  
+- dualr3lite-config.yaml
+- minir4-extreme
 
 ---
 
