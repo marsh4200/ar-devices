@@ -25,7 +25,9 @@ Go to the **templates folder** and download the correct config:
 - m5-3g-config.yaml  
 - tx-1g-config.yaml  
 - tx-2g-config.yaml  
-- tx-3g-config.yaml  
+- tx-3g-config.yaml
+- powr320-config.yaml
+- dualr3lite-config.yaml  
 
 ---
 
