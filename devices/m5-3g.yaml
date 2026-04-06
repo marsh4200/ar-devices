@@ -1,9 +1,4 @@
-substitutions:
-  device_name: m5-3g
-
 esphome:
-  name: ${device_name}
-  name_add_mac_suffix: true
   project:
     name: "AR Smart Home.M5-3G"
     version: "1.0.0"
@@ -17,6 +12,7 @@ esphome:
             - light.turn_on: led1
           else:
             - light.turn_off: led1
+
       - if:
           condition:
             switch.is_on: relay_2
@@ -24,6 +20,7 @@ esphome:
             - light.turn_on: led2
           else:
             - light.turn_off: led2
+
       - if:
           condition:
             switch.is_on: relay_3
@@ -39,16 +36,25 @@ esp32:
 
 logger:
 
+# ---------------------------
+# RELAYS (RESTORE LAST STATE)
+# ---------------------------
 switch:
   - platform: gpio
     id: relay_1
     name: "Lights"
     pin: GPIO23
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - light.turn_on: led1
+    on_turn_off:
+      - light.turn_off: led1
 
   - platform: gpio
     id: relay_2
-    name: "lounge"
+    name: "Lounge"
     pin: GPIO22
+    restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
       - light.turn_on: led2
     on_turn_off:
@@ -58,29 +64,36 @@ switch:
     id: relay_3
     name: "Island"
     pin: GPIO19
+    restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
       - light.turn_on: led3
     on_turn_off:
       - light.turn_off: led3
 
+# ---------------------------
+# OUTPUTS
+# ---------------------------
 output:
   - platform: gpio
     id: led1_output
-    pin: GPIO16        # Top LED
+    pin: GPIO16   # Top LED
 
   - platform: gpio
     id: led2_output
-    pin: GPIO21        # Middle LED
+    pin: GPIO21   # Middle LED
 
   - platform: gpio
     id: led3_output
-    pin: GPIO17        # Bottom LED
+    pin: GPIO17   # Bottom LED
 
   - platform: ledc
-    pin: GPIO18        # Backlight PWM
+    pin: GPIO18
     frequency: 1000 Hz
     id: pwm_output
 
+# ---------------------------
+# LIGHTS
+# ---------------------------
 light:
   - platform: binary
     id: led1
@@ -98,8 +111,8 @@ light:
     output: led3_output
 
   - platform: monochromatic
-    output: pwm_output
     name: "Backlight LEDs"
+    output: pwm_output
 
   - platform: status_led
     name: "WiFi Status"
@@ -107,6 +120,9 @@ light:
       number: GPIO5
       inverted: true
 
+# ---------------------------
+# BUTTONS
+# ---------------------------
 binary_sensor:
   - platform: gpio
     id: top_button
@@ -131,3 +147,9 @@ binary_sensor:
       mode: INPUT_PULLUP
     on_press:
       - switch.toggle: relay_2
+
+# ---------------------------
+# PREFERENCES (CRITICAL)
+# ---------------------------
+preferences:
+  flash_write_interval: 1min
