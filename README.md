@@ -67,7 +67,7 @@ ota:
 ---
 
 
-If no api password or ota then use:
+If no api/ota password then use:
 
 ```
 substitutions:
