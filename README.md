@@ -4,6 +4,7 @@ This repository contains ready-to-use ESPHome configurations and packages for AR
 
 ## Supported Devices
 - M5 Series (1G / 2G / 3G)
+- M5 Series With Double Click
 - TX Series (1G / 2G / 3G)
 - POWR320
 - DualR3 Lite
@@ -26,7 +27,10 @@ Go to the **templates folder** and download the correct config:
 
 - m5-1g-config.yaml  
 - m5-2g-config.yaml  
-- m5-3g-config.yaml  
+- m5-3g-config.yaml
+- m5-1g-advanced-config.yaml
+- m5-2g-advanced-config.yaml
+- m5-3g-advanced-config.yaml
 - tx-1g-config.yaml  
 - tx-2g-config.yaml  
 - tx-3g-config.yaml
