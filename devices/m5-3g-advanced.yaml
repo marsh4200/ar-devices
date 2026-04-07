@@ -1,6 +1,6 @@
 esphome:
   project:
-    name: "AR Smart Home.M5-3GANG WITH MULTICLICK"
+    name: "AR Smart Home.M5-3GANG WITH LONG PRESS"
     version: "1.0.0"
 
 esp32:
@@ -12,10 +12,10 @@ logger:
 
 # 🔥 LOAD SHARED CLICK SYSTEM
 # packages:
-#   double_click:
+#   button_actions:
 #     url: https://github.com/marsh4200/ar-devices
 #     ref: main
-#     file: devices/sonoff_double_click_common.yaml
+#     file: devices/double_click_3g.yaml
 
 # ---------------------------
 # STATUS LED
@@ -80,7 +80,7 @@ light:
     output: pwm_output
 
 # ---------------------------
-# BUTTONS (MULTI-CLICK)
+# BUTTONS
 # ---------------------------
 binary_sensor:
   - platform: gpio
