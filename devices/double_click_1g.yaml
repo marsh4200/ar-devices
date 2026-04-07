@@ -27,11 +27,7 @@ script:
           button: !lambda return button;
           action: "click"
           count: 1
-      - if:
-          condition:
-            lambda: return button == 1;
-          then:
-            - switch.toggle: relay_1
+      - switch.toggle: relay_1
 
   - id: handle_long_press
     mode: queued
@@ -49,16 +45,25 @@ script:
     parameters:
       button: int
     then:
-      - script.execute:
-          id: publish_button_event
-          button: !lambda return button;
-          action: "double_click"
-          count: 2
-      - if:
-          condition:
-            lambda: return id(sl_button_1_double_click_action).state == "Relay 1 (toggle)";
-          then:
-            - switch.toggle: relay_1
+      - lambda: |-
+          std::string action = id(sl_button_1_double_click_action).state;
+          std::string target = id(txt_button_1_double_click_target).state;
+
+          if (action == "Relay 1 (toggle)") {
+            id(relay_1).toggle();
+          }
+
+          if (action == "Home Assistant target (toggle)" && !target.empty()) {
+            id(homeassistant).call_service("homeassistant.toggle", {{"entity_id", target}});
+          }
+
+          if (action == "Home Assistant target (turn on)" && !target.empty()) {
+            id(homeassistant).call_service("homeassistant.turn_on", {{"entity_id", target}});
+          }
+
+          if (action == "Home Assistant target (turn off)" && !target.empty()) {
+            id(homeassistant).call_service("homeassistant.turn_off", {{"entity_id", target}});
+          }
 
 select:
   - platform: template
@@ -66,9 +71,33 @@ select:
     name: Button 1 double-click action
     optimistic: true
     restore_value: true
-    icon: mdi:gesture-double-tap
     entity_category: config
     options:
       - None
       - Relay 1 (toggle)
+      - Relay 2 (toggle)
+      - Relay 3 (toggle)
+      - Home Assistant target (toggle)
+      - Home Assistant target (turn on)
+      - Home Assistant target (turn off)
+      - Cover target (open)
+      - Cover target (close)
+      - Cover target (stop)
+      - Cover target (toggle)
+      - Media player target (play/pause)
+      - Media player target (next track)
+      - Media player target (previous track)
+      - Media player target (stop)
+      - Script target (run)
+      - Scene target (activate)
+      - Button target (press)
+      - Automation target (trigger)
     initial_option: None
+
+text:
+  - platform: template
+    id: txt_button_1_double_click_target
+    name: Button 1 double-click target
+    optimistic: true
+    restore_value: true
+    entity_category: config
