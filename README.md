@@ -115,7 +115,10 @@ ota:
 
 ## 🏠 6. Home Assistant
 
-- Device will appear automatically  
+- Device will appear 
+- 1G-1GANG
+- 2G-2GANG
+- 3G-3GANG
 - Entities are created based on type:
 
 | Device | Entities |
