@@ -1,0 +1,78 @@
+############################################
+# 🔧 AR SMART HOME – M5 1G DEVICE
+# (HARDWARE ONLY)
+############################################
+
+esphome:
+  project:
+    name: "AR Smart Home.M5-1GANG WITH MULTICLICK"
+    version: "1.0.0"
+
+############################################
+# 🔴 STATUS LED
+############################################
+status_led:
+  pin:
+    number: GPIO5
+    inverted: true
+
+############################################
+# 🔁 RESTART BUTTON
+############################################
+button:
+  - platform: restart
+    name: "${friendly_name} Restart"
+
+############################################
+# ⚡ RELAY
+############################################
+switch:
+  - platform: gpio
+    id: relay_1
+    name: "${friendly_name} Relay 1"
+    pin: GPIO23
+    restore_mode: RESTORE_DEFAULT_OFF
+
+############################################
+# 🔘 BUTTON (MULTI-CLICK)
+############################################
+binary_sensor:
+  - platform: gpio
+    id: button_1
+    name: "${friendly_name} Button 1"
+    pin:
+      number: GPIO4
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+
+    on_multi_click:
+      # DOUBLE CLICK
+      - timing:
+          - ON for at most 350ms
+          - OFF for at most 300ms
+          - ON for at most 350ms
+          - OFF for at least 200ms
+        then:
+          - script.execute:
+              id: handle_double_click
+              button: 1
+
+      # SINGLE CLICK
+      - timing:
+          - ON for at most 500ms
+          - OFF for at least 250ms
+        then:
+          - script.execute:
+              id: handle_single_click
+              button: 1
+
+      # LONG PRESS
+      - timing:
+          - ON for at least 700ms
+        then:
+          - script.execute:
+              id: handle_long_press
+              button: 1
