@@ -16,6 +16,19 @@ script:
             action: !lambda return action.c_str();
             button: !lambda return button;
             count: !lambda return count;
+      - if:
+          condition:
+            lambda: return button == 1;
+          then:
+            - text_sensor.template.publish:
+                id: ts_button_1_last_action
+                state: !lambda return action.c_str();
+      - text_sensor.template.publish:
+          id: ts_last_button_event
+          state: !lambda |-
+            char buffer[48];
+            snprintf(buffer, sizeof(buffer), "Button %d: %s (%d)", button, action.c_str(), count);
+            return std::string(buffer);
 
   - id: handle_single_click
     mode: queued
@@ -45,6 +58,11 @@ script:
     parameters:
       button: int
     then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "double_click"
+          count: 2
       - if:
           condition:
             lambda: return id(sl_button_1_double_click_action).state == "Relay 1 (toggle)";
@@ -107,6 +125,21 @@ select:
       - Automation target (trigger)
     initial_option: None
 
+number:
+  - platform: template
+    id: num_button_1_double_click_ms
+    name: Button 1 double-click window
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 100
+    max_value: 1000
+    step: 10
+    mode: box
+    initial_value: 350
+
 text:
   - platform: template
     id: txt_button_1_double_click_target
@@ -119,3 +152,16 @@ text:
     initial_value: ""
     min_length: 0
     max_length: 100
+
+text_sensor:
+  - platform: template
+    id: ts_button_1_last_action
+    name: Button 1 last action
+    icon: mdi:gesture-tap
+    entity_category: diagnostic
+
+  - platform: template
+    id: ts_last_button_event
+    name: Last button event
+    icon: mdi:timeline-text-outline
+    entity_category: diagnostic
