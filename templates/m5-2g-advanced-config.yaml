@@ -34,15 +34,12 @@ wifi:
 # 🔐 API
 ############################################
 api:
-  encryption:
-    key: "PUT_API_ENCRYPTION_KEY_HERE"
 
 ############################################
 # 🔄 OTA
 ############################################
 ota:
   platform: esphome
-  password: "PUT_OTA_PASSWORD_HERE"
 
 ############################################
 # 📦 PACKAGES (DO NOT CHANGE)
