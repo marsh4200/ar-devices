@@ -49,21 +49,16 @@ script:
           std::string action = id(sl_button_1_double_click_action).state;
           std::string target = id(txt_button_1_double_click_target).state;
 
-          if (action == "Relay 1 (toggle)") {
-            id(relay_1).toggle();
-          }
+          if (action == "Relay 1 (toggle)") id(relay_1).toggle();
 
-          if (action == "Home Assistant target (toggle)" && !target.empty()) {
+          if (action == "Home Assistant target (toggle)" && !target.empty())
             id(homeassistant).call_service("homeassistant.toggle", {{"entity_id", target}});
-          }
 
-          if (action == "Home Assistant target (turn on)" && !target.empty()) {
+          if (action == "Home Assistant target (turn on)" && !target.empty())
             id(homeassistant).call_service("homeassistant.turn_on", {{"entity_id", target}});
-          }
 
-          if (action == "Home Assistant target (turn off)" && !target.empty()) {
+          if (action == "Home Assistant target (turn off)" && !target.empty())
             id(homeassistant).call_service("homeassistant.turn_off", {{"entity_id", target}});
-          }
 
 select:
   - platform: template
@@ -98,6 +93,11 @@ text:
   - platform: template
     id: txt_button_1_double_click_target
     name: Button 1 double-click target
+    mode: text
     optimistic: true
     restore_value: true
     entity_category: config
+    icon: mdi:form-textbox
+    initial_value: ""
+    min_length: 0
+    max_length: 100
