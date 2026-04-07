@@ -45,20 +45,38 @@ script:
     parameters:
       button: int
     then:
-      - lambda: |-
-          std::string action = id(sl_button_1_double_click_action).state;
-          std::string target = id(txt_button_1_double_click_target).state;
+      - if:
+          condition:
+            lambda: return id(sl_button_1_double_click_action).state == "Relay 1 (toggle)";
+          then:
+            - switch.toggle: relay_1
 
-          if (action == "Relay 1 (toggle)") id(relay_1).toggle();
+      - if:
+          condition:
+            lambda: return id(sl_button_1_double_click_action).state == "Home Assistant target (toggle)" && !id(txt_button_1_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.toggle
+                data:
+                  entity_id: !lambda return id(txt_button_1_double_click_target).state.c_str();
 
-          if (action == "Home Assistant target (toggle)" && !target.empty())
-            id(homeassistant).call_service("homeassistant.toggle", {{"entity_id", target}});
+      - if:
+          condition:
+            lambda: return id(sl_button_1_double_click_action).state == "Home Assistant target (turn on)" && !id(txt_button_1_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.turn_on
+                data:
+                  entity_id: !lambda return id(txt_button_1_double_click_target).state.c_str();
 
-          if (action == "Home Assistant target (turn on)" && !target.empty())
-            id(homeassistant).call_service("homeassistant.turn_on", {{"entity_id", target}});
-
-          if (action == "Home Assistant target (turn off)" && !target.empty())
-            id(homeassistant).call_service("homeassistant.turn_off", {{"entity_id", target}});
+      - if:
+          condition:
+            lambda: return id(sl_button_1_double_click_action).state == "Home Assistant target (turn off)" && !id(txt_button_1_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.turn_off
+                data:
+                  entity_id: !lambda return id(txt_button_1_double_click_target).state.c_str();
 
 select:
   - platform: template
