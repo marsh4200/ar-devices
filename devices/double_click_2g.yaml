@@ -238,18 +238,6 @@ select:
       - Home Assistant target (toggle)
       - Home Assistant target (turn on)
       - Home Assistant target (turn off)
-      - Cover target (open)
-      - Cover target (close)
-      - Cover target (stop)
-      - Cover target (toggle)
-      - Media player target (play/pause)
-      - Media player target (next track)
-      - Media player target (previous track)
-      - Media player target (stop)
-      - Script target (run)
-      - Scene target (activate)
-      - Button target (press)
-      - Automation target (trigger)
     initial_option: None
 
   - platform: template
@@ -267,18 +255,6 @@ select:
       - Home Assistant target (toggle)
       - Home Assistant target (turn on)
       - Home Assistant target (turn off)
-      - Cover target (open)
-      - Cover target (close)
-      - Cover target (stop)
-      - Cover target (toggle)
-      - Media player target (play/pause)
-      - Media player target (next track)
-      - Media player target (previous track)
-      - Media player target (stop)
-      - Script target (run)
-      - Scene target (activate)
-      - Button target (press)
-      - Automation target (trigger)
     initial_option: None
 
 number:
