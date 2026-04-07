@@ -33,6 +33,31 @@ switch:
     pin: GPIO23
     restore_mode: RESTORE_DEFAULT_OFF
 
+  - platform: template
+    id: backlight_switch
+    name: "${friendly_name} Backlight Switch"
+    lambda: |-
+      return id(backlight_leds).current_values.is_on();
+    turn_on_action:
+      - light.turn_on: backlight_leds
+    turn_off_action:
+      - light.turn_off: backlight_leds
+
+############################################
+# BACKLIGHT
+############################################
+output:
+  - platform: ledc
+    pin: GPIO18
+    frequency: 1000 Hz
+    id: pwm_output
+
+light:
+  - platform: monochromatic
+    id: backlight_leds
+    name: "${friendly_name} Backlight LEDs"
+    output: pwm_output
+
 ############################################
 # 🔘 BUTTON (MULTI-CLICK)
 ############################################
