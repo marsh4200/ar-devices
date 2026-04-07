@@ -58,10 +58,31 @@ wifi:
 
 api:
   encryption:
-    key: "YOUR_API_KEY"
+    key: "YOUR_API_KEY" 
 
 ota:
   password: "YOUR_OTA_PASSWORD"
+```
+
+---
+
+
+If no api password or ota then use:
+
+```
+substitutions:
+  device_name: "YOUR_DEVICE_NAME"
+  friendly_name: "YOUR_FRIENDLY_NAME"
+
+wifi:
+  ssid: "YOUR_WIFI_NAME"
+  password: "YOUR_WIFI_PASSWORD"
+
+api:
+  
+
+ota:
+  
 ```
 
 ---
