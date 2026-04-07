@@ -23,7 +23,6 @@ api:
 
 ota:
   platform: esphome
-  password: "PUT_OTA_PASSWORD_HERE"
 
 ############################################
 # DEVICE NAME
