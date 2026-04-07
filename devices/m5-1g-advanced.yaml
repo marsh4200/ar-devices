@@ -74,17 +74,6 @@ binary_sensor:
       - delayed_off: 10ms
 
     on_multi_click:
-      # DOUBLE CLICK
-      - timing:
-          - ON for at most 350ms
-          - OFF for at most 300ms
-          - ON for at most 350ms
-          - OFF for at least 200ms
-        then:
-          - script.execute:
-              id: handle_double_click
-              button: 1
-
       # SINGLE CLICK
       - timing:
           - ON for at most 500ms
