@@ -14,10 +14,10 @@ logger:
 # INCLUDE DOUBLE CLICK SYSTEM
 # ---------------------------
 packages:
-  double_click: !include
-    file: sonoff_double_click_common.yaml
-    vars:
-      device_model: Sonoff M5 2G
+  double_click:
+    url: https://github.com/marsh4200/ar-devices
+    ref: main
+    file: devices/sonoff_double_click_common.yaml
 
 # ---------------------------
 # STATUS LED
