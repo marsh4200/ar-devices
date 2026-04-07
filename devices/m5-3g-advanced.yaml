@@ -11,11 +11,11 @@ esp32:
 logger:
 
 # 🔥 LOAD SHARED CLICK SYSTEM
-packages:
-  double_click:
-    url: https://github.com/marsh4200/ar-devices
-    ref: main
-    file: devices/double_click_common.yaml
+# packages:
+#   double_click:
+#     url: https://github.com/marsh4200/ar-devices
+#     ref: main
+#     file: devices/sonoff_double_click_common.yaml
 
 # ---------------------------
 # STATUS LED
