@@ -1,5 +1,5 @@
 ############################################
-# 🔧 AR SMART HOME – M5 2G SETUP
+# 🔧 AR SMART HOME – M5 3G ADVANCED
 # 👉 EDIT BEFORE FLASHING
 ############################################
 
@@ -8,7 +8,21 @@ substitutions:
   friendly_name: "PUT_FRIENDLY_NAME_HERE"
 
 ############################################
-# WIFI
+# 🧠 CORE
+############################################
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+############################################
+# 📡 WIFI
 ############################################
 wifi:
   ssid: "PUT_WIFI_NAME_HERE"
@@ -17,31 +31,31 @@ wifi:
   reboot_timeout: 0s
 
 ############################################
-# API / OTA
+# 🔐 API
 ############################################
 api:
+  encryption:
+    key: "PUT_API_ENCRYPTION_KEY_HERE"
 
+############################################
+# 🔄 OTA
+############################################
 ota:
   platform: esphome
   password: "PUT_OTA_PASSWORD_HERE"
 
 ############################################
-# DEVICE NAME
-############################################
-esphome:
-  name: ${device_name}
-  friendly_name: ${friendly_name}
-
-############################################
-# PACKAGES 
+# 📦 PACKAGES (DO NOT CHANGE)
 ############################################
 packages:
   double_click:
     url: https://github.com/marsh4200/ar-devices
     ref: main
     file: devices/sonoff_double_click_common.yaml
+    refresh: 0s
 
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
     file: devices/m5-2g-advanced.yaml
+    refresh: 0s
