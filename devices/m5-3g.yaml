@@ -70,6 +70,16 @@ switch:
     on_turn_off:
       - light.turn_off: led3
 
+  - platform: template
+    id: backlight_switch
+    name: "Backlight Switch"
+    lambda: |-
+      return id(backlight_leds).current_values.is_on();
+    turn_on_action:
+      - light.turn_on: backlight_leds
+    turn_off_action:
+      - light.turn_off: backlight_leds
+
 # ---------------------------
 # OUTPUTS
 # ---------------------------
@@ -111,6 +121,7 @@ light:
     output: led3_output
 
   - platform: monochromatic
+    id: backlight_leds
     name: "Backlight LEDs"
     output: pwm_output
 
