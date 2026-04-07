@@ -1,0 +1,103 @@
+substitutions:
+  device_model: Sonoff Switch
+
+script:
+  - id: publish_button_event
+    mode: queued
+    parameters:
+      button: int
+      action: string
+      count: int
+    then:
+      - homeassistant.event:
+          event: esphome.sonoff_switch_button
+          data:
+            model: ${device_model}
+            action: !lambda return action.c_str();
+            button: !lambda return button;
+            count: !lambda return count;
+
+  - id: handle_single_click
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "click"
+          count: 1
+      - if:
+          condition:
+            lambda: return button == 1;
+          then:
+            - switch.toggle: relay_1
+      - if:
+          condition:
+            lambda: return button == 2;
+          then:
+            - switch.toggle: relay_2
+
+  - id: handle_long_press
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "long_press"
+          count: 1
+
+  - id: handle_double_click
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "double_click"
+          count: 2
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 1 (toggle)";
+              return id(sl_button_2_double_click_action).state == "Relay 1 (toggle)";
+          then:
+            - switch.toggle: relay_1
+
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 2 (toggle)";
+              return id(sl_button_2_double_click_action).state == "Relay 2 (toggle)";
+          then:
+            - switch.toggle: relay_2
+
+select:
+  - platform: template
+    id: sl_button_1_double_click_action
+    name: Button 1 double-click action
+    optimistic: true
+    restore_value: true
+    icon: mdi:gesture-double-tap
+    entity_category: config
+    options:
+      - None
+      - Relay 1 (toggle)
+      - Relay 2 (toggle)
+    initial_option: None
+
+  - platform: template
+    id: sl_button_2_double_click_action
+    name: Button 2 double-click action
+    optimistic: true
+    restore_value: true
+    icon: mdi:gesture-double-tap
+    entity_category: config
+    options:
+      - None
+      - Relay 1 (toggle)
+      - Relay 2 (toggle)
+    initial_option: None
