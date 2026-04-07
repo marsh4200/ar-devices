@@ -1,1 +1,443 @@
+substitutions:
+  device_model: Sonoff Switch
 
+script:
+  - id: publish_button_event
+    mode: queued
+    parameters:
+      button: int
+      action: string
+      count: int
+    then:
+      - homeassistant.event:
+          event: esphome.sonoff_switch_button
+          data:
+            model: ${device_model}
+            action: !lambda return action.c_str();
+            button: !lambda return button;
+            count: !lambda return count;
+
+  - id: handle_single_click
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "click"
+          count: 1
+      - if:
+          condition:
+            lambda: return button == 1;
+          then:
+            - switch.toggle: relay_1
+      - if:
+          condition:
+            lambda: return button == 2;
+          then:
+            - switch.toggle: relay_2
+      - if:
+          condition:
+            lambda: return button == 3;
+          then:
+            - switch.toggle: relay_3
+
+  - id: handle_long_press
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "long_press"
+          count: 1
+
+  - id: handle_double_click
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "double_click"
+          count: 2
+      - lambda: |-
+          std::string configured_action = "None";
+          std::string target_entity_id;
+          if (button == 1) {
+            configured_action = id(sl_button_1_double_click_action).state;
+            target_entity_id = id(txt_button_1_double_click_target).state;
+          } else if (button == 2) {
+            configured_action = id(sl_button_2_double_click_action).state;
+            target_entity_id = id(txt_button_2_double_click_target).state;
+          } else if (button == 3) {
+            configured_action = id(sl_button_3_double_click_action).state;
+            target_entity_id = id(txt_button_3_double_click_target).state;
+          }
+          ESP_LOGI("double_click",
+                   "Button %d double-click action: '%s' target='%s'",
+                   button,
+                   configured_action.c_str(),
+                   target_entity_id.c_str());
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 1 (toggle)";
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Relay 1 (toggle)";
+              return id(sl_button_3_double_click_action).state == "Relay 1 (toggle)";
+          then:
+            - switch.toggle: relay_1
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 2 (toggle)";
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Relay 2 (toggle)";
+              return id(sl_button_3_double_click_action).state == "Relay 2 (toggle)";
+          then:
+            - switch.toggle: relay_2
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 3 (toggle)";
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Relay 3 (toggle)";
+              return id(sl_button_3_double_click_action).state == "Relay 3 (toggle)";
+          then:
+            - switch.toggle: relay_3
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Home Assistant target (toggle)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Home Assistant target (toggle)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Home Assistant target (toggle)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.toggle
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Home Assistant target (turn on)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Home Assistant target (turn on)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Home Assistant target (turn on)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.turn_on
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Home Assistant target (turn off)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Home Assistant target (turn off)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Home Assistant target (turn off)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.turn_off
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Cover target (open)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Cover target (open)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Cover target (open)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: cover.open_cover
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Cover target (close)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Cover target (close)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Cover target (close)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: cover.close_cover
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Cover target (stop)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Cover target (stop)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Cover target (stop)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: cover.stop_cover
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Cover target (toggle)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Cover target (toggle)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Cover target (toggle)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.toggle
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Media player target (play/pause)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Media player target (play/pause)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Media player target (play/pause)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: media_player.media_play_pause
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Media player target (next track)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Media player target (next track)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Media player target (next track)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: media_player.media_next_track
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Media player target (previous track)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Media player target (previous track)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Media player target (previous track)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: media_player.media_previous_track
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Media player target (stop)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Media player target (stop)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Media player target (stop)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: media_player.media_stop
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Script target (run)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Script target (run)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Script target (run)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: script.turn_on
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Scene target (activate)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Scene target (activate)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Scene target (activate)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: scene.turn_on
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Button target (press)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Button target (press)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Button target (press)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: button.press
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Automation target (trigger)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Automation target (trigger)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Automation target (trigger)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: automation.trigger
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
+                    if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
+                    return id(txt_button_3_double_click_target).state.c_str();
+
+select:
+  - platform: template
+    id: sl_button_1_double_click_action
+    name: Button 1 double-click action
+    optimistic: true
+    restore_value: true
+    icon: mdi:gesture-double-tap
+    entity_category: config
+    options:
+      - None
+      - Relay 1 (toggle)
+      - Relay 2 (toggle)
+      - Relay 3 (toggle)
+      - Home Assistant target (toggle)
+      - Home Assistant target (turn on)
+      - Home Assistant target (turn off)
+      - Cover target (open)
+      - Cover target (close)
+      - Cover target (stop)
+      - Cover target (toggle)
+      - Media player target (play/pause)
+      - Media player target (next track)
+      - Media player target (previous track)
+      - Media player target (stop)
+      - Script target (run)
+      - Scene target (activate)
+      - Button target (press)
+      - Automation target (trigger)
+    initial_option: None
+
+  - platform: template
+    id: sl_button_2_double_click_action
+    name: Button 2 double-click action
+    optimistic: true
+    restore_value: true
+    icon: mdi:gesture-double-tap
+    entity_category: config
+    options:
+      - None
+      - Relay 1 (toggle)
+      - Relay 2 (toggle)
+      - Relay 3 (toggle)
+      - Home Assistant target (toggle)
+      - Home Assistant target (turn on)
+      - Home Assistant target (turn off)
+      - Cover target (open)
+      - Cover target (close)
+      - Cover target (stop)
+      - Cover target (toggle)
+      - Media player target (play/pause)
+      - Media player target (next track)
+      - Media player target (previous track)
+      - Media player target (stop)
+      - Script target (run)
+      - Scene target (activate)
+      - Button target (press)
+      - Automation target (trigger)
+    initial_option: None
+
+  - platform: template
+    id: sl_button_3_double_click_action
+    name: Button 3 double-click action
+    optimistic: true
+    restore_value: true
+    icon: mdi:gesture-double-tap
+    entity_category: config
+    options:
+      - None
+      - Relay 1 (toggle)
+      - Relay 2 (toggle)
+      - Relay 3 (toggle)
+      - Home Assistant target (toggle)
+      - Home Assistant target (turn on)
+      - Home Assistant target (turn off)
+      - Cover target (open)
+      - Cover target (close)
+      - Cover target (stop)
+      - Cover target (toggle)
+      - Media player target (play/pause)
+      - Media player target (next track)
+      - Media player target (previous track)
+      - Media player target (stop)
+      - Script target (run)
+      - Scene target (activate)
+      - Button target (press)
+      - Automation target (trigger)
+    initial_option: None
+
+text:
+  - platform: template
+    id: txt_button_1_double_click_target
+    name: Button 1 double-click target
+    mode: text
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:form-textbox
+    initial_value: ""
+    min_length: 0
+    max_length: 100
+
+  - platform: template
+    id: txt_button_2_double_click_target
+    name: Button 2 double-click target
+    mode: text
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:form-textbox
+    initial_value: ""
+    min_length: 0
+    max_length: 100
+
+  - platform: template
+    id: txt_button_3_double_click_target
+    name: Button 3 double-click target
+    mode: text
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:form-textbox
+    initial_value: ""
+    min_length: 0
+    max_length: 100
