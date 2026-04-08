@@ -1,5 +1,5 @@
 # 🔧 AR Smart Home – ESPHome Devices
-# SONOFF
+# SONOFF DEVICES
 
 This repository contains ready-to-use ESPHome configurations and packages for AR Smart Home devices.
 
