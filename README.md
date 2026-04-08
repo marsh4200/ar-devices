@@ -6,6 +6,7 @@ This repository contains ready-to-use ESPHome configurations and packages for AR
 ## Supported Devices
 - M5 Series (1G / 2G / 3G)
 - M5 Series With Long Press
+- M5 Series With Double Click
 - TX Series (1G / 2G / 3G)
 - POWR320
 - DualR3 Lite
