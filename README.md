@@ -28,9 +28,9 @@ Go to the **templates folder** and download the correct config:
 - m5-1g-config.yaml  
 - m5-2g-config.yaml  
 - m5-3g-config.yaml
-- m5-1g-advanced-config.yaml
-- m5-2g-advanced-config.yaml
-- m5-3g-advanced-config.yaml
+- m5-1g-longpress-config.yaml
+- m5-2g-longpress-config.yaml
+- m5-3g-longpress-config.yaml
 - tx-1g-config.yaml  
 - tx-2g-config.yaml  
 - tx-3g-config.yaml
