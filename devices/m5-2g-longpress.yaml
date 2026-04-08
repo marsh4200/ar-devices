@@ -86,7 +86,7 @@ light:
 
   - platform: binary
     id: led2
-    name: "Touch LED Bottom"
+    internal: true
     output: relay_4
 
 # ---------------------------
