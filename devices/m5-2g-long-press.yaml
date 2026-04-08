@@ -1,6 +1,6 @@
 esphome:
   project:
-    name: "AR Smart Home.M5-3GANG WITH LONG PRESS"
+    name: "AR Smart Home.M5-2GANG WITH LONG PRESS"
     version: "1.0.0"
 
 esp32:
@@ -10,12 +10,7 @@ esp32:
 
 logger:
 
-# 🔥 LOAD SHARED BUTTON SYSTEM
-# packages:
-#   long_press:
-#     url: https://github.com/marsh4200/ar-devices
-#     ref: main
-#     file: devices/long_press_3g.yaml
+
 
 # ---------------------------
 # STATUS LED
@@ -26,11 +21,11 @@ status_led:
     inverted: true
 
 # ---------------------------
-# RESTART BUTTON
+# RESTART
 # ---------------------------
 button:
   - platform: restart
-    name: "${friendly_name} Restart"
+    name: "Restart"
 
 # ---------------------------
 # RELAYS
@@ -38,25 +33,27 @@ button:
 switch:
   - platform: gpio
     id: relay_1
-    name: "${friendly_name} Relay 1"
+    name: "Switch 1"
     pin: GPIO23
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: relay_2
-    name: "${friendly_name} Relay 2"
+    name: "Switch 2"
     pin: GPIO19
     restore_mode: RESTORE_DEFAULT_OFF
 
-  - platform: gpio
+  # Virtual relay (for scripts)
+  - platform: template
     id: relay_3
-    name: "${friendly_name} Relay 3"
-    pin: GPIO22
-    restore_mode: RESTORE_DEFAULT_OFF
+    internal: true
+    optimistic: true
+    turn_on_action: []
+    turn_off_action: []
 
   - platform: template
     id: backlight_switch
-    name: "${friendly_name} Backlight Switch"
+    name: "Backlight Switch"
     lambda: |-
       return id(backlight_leds).current_values.is_on();
     turn_on_action:
@@ -76,8 +73,8 @@ output:
 light:
   - platform: monochromatic
     id: backlight_leds
-    name: "${friendly_name} Backlight LEDs"
     output: pwm_output
+    name: "Backlight LEDs"
 
 # ---------------------------
 # BUTTONS
@@ -85,18 +82,23 @@ light:
 binary_sensor:
   - platform: gpio
     id: button_1
+    name: "Button 1"
     pin:
       number: GPIO4
-      mode: INPUT_PULLUP
+      mode:
+        input: true
+        pullup: true
       inverted: true
     filters:
       - delayed_on: 10ms
       - delayed_off: 10ms
+
     on_press:
       then:
         - script.execute:
             id: start_button_press
             button: 1
+
     on_release:
       then:
         - script.execute:
@@ -105,40 +107,25 @@ binary_sensor:
 
   - platform: gpio
     id: button_2
-    pin:
-      number: GPIO0
-      mode: INPUT_PULLUP
-      inverted: true
-    filters:
-      - delayed_on: 10ms
-      - delayed_off: 10ms
-    on_press:
-      then:
-        - script.execute:
-            id: start_button_press
-            button: 2
-    on_release:
-      then:
-        - script.execute:
-            id: release_button_press
-            button: 2
-
-  - platform: gpio
-    id: button_3
+    name: "Button 2"
     pin:
       number: GPIO15
-      mode: INPUT_PULLUP
+      mode:
+        input: true
+        pullup: true
       inverted: true
     filters:
       - delayed_on: 10ms
       - delayed_off: 10ms
+
     on_press:
       then:
         - script.execute:
             id: start_button_press
-            button: 3
+            button: 2
+
     on_release:
       then:
         - script.execute:
             id: release_button_press
-            button: 3
+            button: 2
