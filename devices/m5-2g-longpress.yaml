@@ -42,6 +42,10 @@ switch:
     name: "Switch 2"
     pin: GPIO19
     restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - light.turn_on: led2
+    on_turn_off:
+      - light.turn_off: led2
 
   # Virtual relay (for scripts)
   - platform: template
@@ -70,11 +74,20 @@ output:
     frequency: 1000 Hz
     id: pwm_output
 
+  - platform: gpio
+    id: relay_4
+    pin: GPIO22
+
 light:
   - platform: monochromatic
     id: backlight_leds
     output: pwm_output
     name: "Backlight LEDs"
+
+  - platform: binary
+    id: led2
+    name: "Touch LED Bottom"
+    output: relay_4
 
 # ---------------------------
 # BUTTONS
