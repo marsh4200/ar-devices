@@ -176,7 +176,7 @@ script:
   - id: resolve_button_1_clicks
     mode: restart
     then:
-      - delay: 350ms
+      - delay: !lambda return (uint32_t) id(num_button_1_double_click_ms).state;
       - if:
           condition:
             lambda: return id(button_1_click_count) == 1;
@@ -196,7 +196,7 @@ script:
   - id: resolve_button_2_clicks
     mode: restart
     then:
-      - delay: 350ms
+      - delay: !lambda return (uint32_t) id(num_button_2_double_click_ms).state;
       - if:
           condition:
             lambda: return id(button_2_click_count) == 1;
@@ -247,6 +247,35 @@ select:
       - Home Assistant target (turn on)
       - Home Assistant target (turn off)
     initial_option: None
+
+number:
+  - platform: template
+    id: num_button_1_double_click_ms
+    name: Button 1 double-click timer
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 150
+    max_value: 1000
+    step: 25
+    mode: box
+    initial_value: 350
+
+  - platform: template
+    id: num_button_2_double_click_ms
+    name: Button 2 double-click timer
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 150
+    max_value: 1000
+    step: 25
+    mode: box
+    initial_value: 350
 
 text:
   - platform: template

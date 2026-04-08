@@ -1,6 +1,22 @@
 substitutions:
   device_model: Sonoff Switch
 
+globals:
+  - id: button_1_click_count
+    type: int
+    restore_value: no
+    initial_value: "0"
+
+  - id: button_2_click_count
+    type: int
+    restore_value: no
+    initial_value: "0"
+
+  - id: button_3_click_count
+    type: int
+    restore_value: no
+    initial_value: "0"
+
 script:
   - id: publish_button_event
     mode: queued
@@ -79,7 +95,7 @@ script:
           id: publish_button_event
           button: !lambda return button;
           action: "double_click"
-          count: 1
+          count: 2
       - lambda: |-
           std::string configured_action = "None";
           std::string target_entity_id;
@@ -333,6 +349,97 @@ script:
                     if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
                     return id(txt_button_3_double_click_target).state.c_str();
 
+  - id: start_button_press
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - lambda: return;
+
+  - id: release_button_press
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - if:
+          condition:
+            lambda: return button == 1;
+          then:
+            - lambda: id(button_1_click_count) += 1;
+            - script.execute: resolve_button_1_clicks
+      - if:
+          condition:
+            lambda: return button == 2;
+          then:
+            - lambda: id(button_2_click_count) += 1;
+            - script.execute: resolve_button_2_clicks
+      - if:
+          condition:
+            lambda: return button == 3;
+          then:
+            - lambda: id(button_3_click_count) += 1;
+            - script.execute: resolve_button_3_clicks
+
+  - id: resolve_button_1_clicks
+    mode: restart
+    then:
+      - delay: !lambda return (uint32_t) id(num_button_1_double_click_ms).state;
+      - if:
+          condition:
+            lambda: return id(button_1_click_count) == 1;
+          then:
+            - script.execute:
+                id: handle_single_click
+                button: 1
+      - if:
+          condition:
+            lambda: return id(button_1_click_count) >= 2;
+          then:
+            - script.execute:
+                id: handle_double_click
+                button: 1
+      - lambda: id(button_1_click_count) = 0;
+
+  - id: resolve_button_2_clicks
+    mode: restart
+    then:
+      - delay: !lambda return (uint32_t) id(num_button_2_double_click_ms).state;
+      - if:
+          condition:
+            lambda: return id(button_2_click_count) == 1;
+          then:
+            - script.execute:
+                id: handle_single_click
+                button: 2
+      - if:
+          condition:
+            lambda: return id(button_2_click_count) >= 2;
+          then:
+            - script.execute:
+                id: handle_double_click
+                button: 2
+      - lambda: id(button_2_click_count) = 0;
+
+  - id: resolve_button_3_clicks
+    mode: restart
+    then:
+      - delay: !lambda return (uint32_t) id(num_button_3_double_click_ms).state;
+      - if:
+          condition:
+            lambda: return id(button_3_click_count) == 1;
+          then:
+            - script.execute:
+                id: handle_single_click
+                button: 3
+      - if:
+          condition:
+            lambda: return id(button_3_click_count) >= 2;
+          then:
+            - script.execute:
+                id: handle_double_click
+                button: 3
+      - lambda: id(button_3_click_count) = 0;
+
 select:
   - platform: template
     id: sl_button_1_double_click_action
@@ -420,6 +527,49 @@ select:
       - Button target (press)
       - Automation target (trigger)
     initial_option: None
+
+number:
+  - platform: template
+    id: num_button_1_double_click_ms
+    name: Button 1 double-click timer
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 150
+    max_value: 1000
+    step: 25
+    mode: box
+    initial_value: 350
+
+  - platform: template
+    id: num_button_2_double_click_ms
+    name: Button 2 double-click timer
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 150
+    max_value: 1000
+    step: 25
+    mode: box
+    initial_value: 350
+
+  - platform: template
+    id: num_button_3_double_click_ms
+    name: Button 3 double-click timer
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 150
+    max_value: 1000
+    step: 25
+    mode: box
+    initial_value: 350
 
 text:
   - platform: template

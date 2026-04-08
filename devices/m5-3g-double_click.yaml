@@ -92,22 +92,16 @@ binary_sensor:
     filters:
       - delayed_on: 10ms
       - delayed_off: 10ms
-    on_multi_click:
-      - timing:
-          - ON for at most 350ms
-          - OFF for at least 350ms
-        then:
-          - script.execute:
-              id: handle_single_click
-              button: 1
-      - timing:
-          - ON for at most 350ms
-          - OFF for at most 350ms
-          - ON for at most 350ms
-        then:
-          - script.execute:
-              id: handle_double_click
-              button: 1
+    on_press:
+      then:
+        - script.execute:
+            id: start_button_press
+            button: 1
+    on_release:
+      then:
+        - script.execute:
+            id: release_button_press
+            button: 1
 
   - platform: gpio
     id: button_2
@@ -118,22 +112,16 @@ binary_sensor:
     filters:
       - delayed_on: 10ms
       - delayed_off: 10ms
-    on_multi_click:
-      - timing:
-          - ON for at most 350ms
-          - OFF for at least 350ms
-        then:
-          - script.execute:
-              id: handle_single_click
-              button: 2
-      - timing:
-          - ON for at most 350ms
-          - OFF for at most 350ms
-          - ON for at most 350ms
-        then:
-          - script.execute:
-              id: handle_double_click
-              button: 2
+    on_press:
+      then:
+        - script.execute:
+            id: start_button_press
+            button: 2
+    on_release:
+      then:
+        - script.execute:
+            id: release_button_press
+            button: 2
 
   - platform: gpio
     id: button_3
@@ -144,19 +132,13 @@ binary_sensor:
     filters:
       - delayed_on: 10ms
       - delayed_off: 10ms
-    on_multi_click:
-      - timing:
-          - ON for at most 350ms
-          - OFF for at least 350ms
-        then:
-          - script.execute:
-              id: handle_single_click
-              button: 3
-      - timing:
-          - ON for at most 350ms
-          - OFF for at most 350ms
-          - ON for at most 350ms
-        then:
-          - script.execute:
-              id: handle_double_click
-              button: 3
+    on_press:
+      then:
+        - script.execute:
+            id: start_button_press
+            button: 3
+    on_release:
+      then:
+        - script.execute:
+            id: release_button_press
+            button: 3
