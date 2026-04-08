@@ -30,7 +30,7 @@ status_led:
 # ---------------------------
 button:
   - platform: restart
-    name: "${friendly_name} Restart"
+    name: "Restart"
 
 # ---------------------------
 # RELAYS
@@ -38,25 +38,25 @@ button:
 switch:
   - platform: gpio
     id: relay_1
-    name: "${friendly_name} Relay 1"
+    name: "Relay 1"
     pin: GPIO23
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: relay_2
-    name: "${friendly_name} Relay 2"
+    name: "Relay 2"
     pin: GPIO19
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: gpio
     id: relay_3
-    name: "${friendly_name} Relay 3"
+    name: "Relay 3"
     pin: GPIO22
     restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: template
     id: backlight_switch
-    name: "${friendly_name} Backlight Switch"
+    name: "Backlight Switch"
     lambda: |-
       return id(backlight_leds).current_values.is_on();
     turn_on_action:
@@ -76,7 +76,7 @@ output:
 light:
   - platform: monochromatic
     id: backlight_leds
-    name: "${friendly_name} Backlight LEDs"
+    name: "Backlight LEDs"
     output: pwm_output
 
 # ---------------------------
