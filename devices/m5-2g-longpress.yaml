@@ -1,6 +1,6 @@
 esphome:
   project:
-    name: "AR Smart Home.M5-2GANG WITH LONG PRESS"
+    name: "www.arsmarthome.co.za.AR Smart Home.M5-2GANG WITH LONG PRESS"
     version: "1.0.0"
 
 esp32:
