@@ -51,5 +51,5 @@ packages:
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5-3g-double_click.yaml
+    file: devices/m5/doubleclick/m5-3g-double_click.yaml
     refresh: 0s
