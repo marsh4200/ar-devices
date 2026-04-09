@@ -8,6 +8,8 @@ This repository contains ready-to-use ESPHome configurations and packages for AR
 - M5 Series With Long Press
 - M5 Series With Double Click
 - TX Series (1G / 2G / 3G)
+- TX Series With Double Tap
+- TX Series With Long Press
 - POWR320
 - DualR3 Lite
 - MiniR4-Extreme
@@ -30,20 +32,37 @@ Go to the **templates folder** and download the correct config:
 - m5-1g-config.yaml  
 - m5-2g-config.yaml  
 - m5-3g-config.yaml
+- 
 - m5-1g-longpress-config.yaml
 - m5-2g-longpress-config.yaml
 - m5-3g-longpress-config.yaml
+- 
 - m5-1g-doubleclick-config.yaml
 - m5-2g-doubleclick-config.yaml
 - m5-3g-doubleclick-config.yaml
+- 
 - tx-1g-config.yaml  
 - tx-2g-config.yaml  
 - tx-3g-config.yaml
+- 
+- tx-1g-doubletap-config.yaml
+- tx-2g-doubletap-config.yaml
+- tx-3g-doubletap-config.yaml
+- 
+- tx-1g-longpress-config.yaml
+- tx-2g-longpress-config.yaml
+- tx-3g-longpress-config.yaml
+- 
 - powr320-config.yaml
+- 
 - dualr3lite-config.yaml
+-
 - minir4-extreme-config.yaml
+-
 - 4ch-pro-r3-config.yaml
+-
 - minir2-config.yaml
+-
 - basic-r2-config.yaml
 
 ---
