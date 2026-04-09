@@ -45,11 +45,11 @@ packages:
   double_click:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5/longpress/config/long_press_1g.yaml
+    file: devices/m5/longpress/config/long_press_3g.yaml
     refresh: 0s
 
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5/longpress/m5-2g-longpress.yaml
+    file: devices/m5/longpress/m5-3g-longpress.yaml
     refresh: 0s
