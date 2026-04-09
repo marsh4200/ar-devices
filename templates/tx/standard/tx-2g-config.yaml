@@ -1,5 +1,5 @@
 ############################################
-# 🔧 AR SMART HOME – TX-1G SETUP
+# 🔧 AR SMART HOME – TX-2G SETUP
 # 👉 EDIT BEFORE FLASHING
 ############################################
 
@@ -38,5 +38,5 @@ packages:
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/tx-1g.yaml
+    file: devices/tx-2g.yaml
     refresh: 0min
