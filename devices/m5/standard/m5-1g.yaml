@@ -1,1 +1,97 @@
+esphome:
+  project:
+    name: "AR Smart Home.M5-1GANG"
+    version: "1.0.0"
+  on_boot:
+    priority: 600
+    then:
+      - if:
+          condition:
+            switch.is_on: relay_1
+          then:
+            - light.turn_on: led1
+          else:
+            - light.turn_off: led1
 
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+# ---------------------------
+# RELAY (RESTORE LAST STATE)
+# ---------------------------
+switch:
+  - platform: gpio
+    id: relay_1
+    name: "Switch 1"
+    pin: GPIO23
+    restore_mode: RESTORE_DEFAULT_OFF   # ← restores last state (default OFF if none)
+    on_turn_on:
+      - light.turn_on: led1
+    on_turn_off:
+      - light.turn_off: led1
+
+  - platform: template
+    id: backlight_switch
+    name: "Backlight Switch"
+    lambda: |-
+      return id(backlight_leds).current_values.is_on();
+    turn_on_action:
+      - light.turn_on: backlight_leds
+    turn_off_action:
+      - light.turn_off: backlight_leds
+
+# ---------------------------
+# OUTPUTS
+# ---------------------------
+output:
+  - platform: ledc
+    pin: GPIO18
+    frequency: 1000 Hz
+    id: pwm_output
+
+  - platform: gpio
+    id: relay_led
+    pin: GPIO19
+
+# ---------------------------
+# LIGHTS
+# ---------------------------
+light:
+  - platform: monochromatic
+    id: backlight_leds
+    name: "Backlight LEDs"
+    output: pwm_output
+
+  - platform: binary
+    id: led1
+    name: "Touch LED"
+    output: relay_led
+
+  - platform: status_led
+    name: "WiFi Status"
+    pin:
+      number: GPIO5
+      inverted: true
+
+# ---------------------------
+# BUTTON
+# ---------------------------
+binary_sensor:
+  - platform: gpio
+    id: button_1
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - switch.toggle: relay_1
+
+# ---------------------------
+# PREFERENCES (REQUIRED)
+# ---------------------------
+preferences:
+  flash_write_interval: 1min
