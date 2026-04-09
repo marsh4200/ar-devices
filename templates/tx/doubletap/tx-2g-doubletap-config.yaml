@@ -1,5 +1,5 @@
 ############################################
-# AR SMART HOME - TX 1G DOUBLE TAP SETUP
+# AR SMART HOME - TX 2G DOUBLE TAP SETUP
 # EDIT BEFORE FLASHING
 ############################################
 
@@ -26,11 +26,11 @@ packages:
   gesture_config:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/tx/doubletap/config/double_tap_1g.yaml
+    file: devices/tx/doubletap/config/double_tap_2g.yaml
     refresh: 0min
 
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/tx/doubletap/tx-1g-doubletap.yaml
+    file: devices/tx/doubletap/tx-2g-doubletap.yaml
     refresh: 0min
