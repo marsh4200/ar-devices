@@ -1,0 +1,58 @@
+############################################
+# 🔧 AR SMART HOME – M5 1G SETUP
+# 👉 EDIT BEFORE FLASHING
+############################################
+
+substitutions:
+  device_name: "PUT_DEVICE_NAME_HERE"
+  friendly_name: "PUT_FRIENDLY_NAME_HERE"
+
+############################################
+# 🧠 CORE
+############################################
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+############################################
+# 📡 WIFI
+############################################
+wifi:
+  ssid: "PUT_WIFI_NAME_HERE"
+  password: "PUT_WIFI_PASSWORD_HERE"
+  fast_connect: true
+  reboot_timeout: 0s
+
+############################################
+# 🔐 API
+############################################
+api:
+
+############################################
+# 🔄 OTA
+############################################
+ota:
+  platform: esphome
+
+############################################
+# 📦 PACKAGES (DO NOT CHANGE)
+############################################
+packages:
+  double_click:
+    url: https://github.com/marsh4200/ar-devices
+    ref: main
+    file: devices/m5/longpress/config/long_press_1g.yaml
+    refresh: 0s
+
+  device:
+    url: https://github.com/marsh4200/ar-devices
+    ref: main
+    file: devices/m5/longpress/m5-1g-longpress.yaml
+    refresh: 0s
