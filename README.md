@@ -33,7 +33,7 @@ Go to the **templates folder** and download the correct config:
 - m5-1g-config.yaml  
 - m5-2g-config.yaml  
 - m5-3g-config.yaml
-  
+- 
 - Long Press
 - m5-1g-longpress-config.yaml
 - m5-2g-longpress-config.yaml
