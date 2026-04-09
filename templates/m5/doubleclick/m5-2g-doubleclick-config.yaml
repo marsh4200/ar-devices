@@ -1,5 +1,5 @@
 ############################################
-# AR SMART HOME - M5 1G SETUP
+# AR SMART HOME - M5 2G ADVANCED
 # EDIT BEFORE FLASHING
 ############################################
 
@@ -48,11 +48,11 @@ packages:
   double_click:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5/doubleclick/config/double_click_1g.yaml
+    file: devices/m5/doubleclick/config/double_click_2g.yaml
     refresh: 0s
 
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5/doubleclick/m5-1g-double_click.yaml
+    file: devices/m5/doubleclick/m5-2g-double_click.yaml
     refresh: 0s

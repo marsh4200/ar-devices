@@ -1,5 +1,5 @@
 ############################################
-# AR SMART HOME - M5 1G SETUP
+# AR SMART HOME - M5 3G SETUP
 # EDIT BEFORE FLASHING
 ############################################
 
@@ -8,7 +8,24 @@ substitutions:
   friendly_name: "PUT_FRIENDLY_NAME_HERE"
 
 ############################################
-# CORE
+# WIFI
+############################################
+wifi:
+  ssid: "PUT_WIFI_NAME_HERE"
+  password: "PUT_WIFI_PASSWORD_HERE"
+  fast_connect: true
+  reboot_timeout: 0s
+
+############################################
+# API / OTA
+############################################
+api:
+
+ota:
+  platform: esphome
+
+############################################
+# DEVICE NAME
 ############################################
 esphome:
   name: ${device_name}
@@ -22,37 +39,17 @@ esp32:
 logger:
 
 ############################################
-# WIFI
-############################################
-wifi:
-  ssid: "PUT_WIFI_NAME_HERE"
-  password: "PUT_WIFI_PASSWORD_HERE"
-  fast_connect: true
-  reboot_timeout: 0s
-
-############################################
-# API
-############################################
-api:
-
-############################################
-# OTA
-############################################
-ota:
-  platform: esphome
-
-############################################
-# PACKAGES (DO NOT CHANGE)
+# PACKAGES
 ############################################
 packages:
   double_click:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5/doubleclick/config/double_click_1g.yaml
+    file: devices/m5/doubleclick/config/double_click_3g.yaml
     refresh: 0s
 
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5/doubleclick/m5-1g-double_click.yaml
+    file: devices/m5/doubleclick/m5-3g-double_click.yaml
     refresh: 0s
