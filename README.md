@@ -43,22 +43,22 @@ Go to the **templates folder** and download the correct config:
 - m5-1g-doubleclick-config.yaml
 - m5-2g-doubleclick-config.yaml
 - m5-3g-doubleclick-config.yaml
-  
+-
 - Standard
 - tx-1g-config.yaml  
 - tx-2g-config.yaml  
 - tx-3g-config.yaml
-  
+- 
 - Double Tap
 - tx-1g-doubletap-config.yaml
 - tx-2g-doubletap-config.yaml
 - tx-3g-doubletap-config.yaml
-  
+- 
 - Long Press
 - tx-1g-longpress-config.yaml
 - tx-2g-longpress-config.yaml
 - tx-3g-longpress-config.yaml
-  
+- 
 - powr320-config.yaml
 - 
 - dualr3lite-config.yaml
