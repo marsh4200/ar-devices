@@ -48,7 +48,7 @@ packages:
   double_click:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/long_press_2g.yaml
+    file: devices/m5/longpress/config/long_press_2g.yaml
     refresh: 0s
 
   device:
