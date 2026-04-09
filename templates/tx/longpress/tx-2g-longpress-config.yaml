@@ -1,5 +1,5 @@
 ############################################
-# AR SMART HOME - TX 1G LONG PRESS SETUP
+# AR SMART HOME - TX 2G LONG PRESS SETUP
 # EDIT BEFORE FLASHING
 ############################################
 
@@ -26,11 +26,11 @@ packages:
   gesture_config:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/tx/longpress/config/long_press_1g.yaml
+    file: devices/tx/longpress/config/long_press_2g.yaml
     refresh: 0min
 
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/tx/longpress/tx-1g-longpress.yaml
+    file: devices/tx/longpress/tx-2g-longpress.yaml
     refresh: 0min
