@@ -180,7 +180,7 @@ ota:
 ---
 
 ## ✅ Done
-Your devive should now be showing in (auto discoverd devies) in devies and services 
+Your devive should now be showing in (auto discoverd devices) in devices and services 
 Your device is now ready and integrated with Home Assistant.
 
 ---
