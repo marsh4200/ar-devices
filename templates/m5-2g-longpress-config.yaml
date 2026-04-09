@@ -54,5 +54,5 @@ packages:
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5-2g-longpress.yaml
+    file: devices/m5/longpress/m5-2g-longpress.yaml
     refresh: 0s
