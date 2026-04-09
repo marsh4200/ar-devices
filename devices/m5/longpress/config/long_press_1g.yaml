@@ -1,1 +1,193 @@
+substitutions:
+  device_model: Sonoff Switch
 
+globals:
+  - id: button_1_is_pressed
+    type: bool
+    restore_value: no
+    initial_value: "false"
+
+  - id: button_1_long_press_fired
+    type: bool
+    restore_value: no
+    initial_value: "false"
+
+script:
+  - id: publish_button_event
+    mode: queued
+    parameters:
+      button: int
+      action: string
+      count: int
+    then:
+      - homeassistant.event:
+          event: esphome.sonoff_switch_button
+          data:
+            model: ${device_model}
+            action: !lambda return action.c_str();
+            button: !lambda return button;
+            count: !lambda return count;
+      - if:
+          condition:
+            lambda: return button == 1;
+          then:
+            - text_sensor.template.publish:
+                id: ts_button_1_last_action
+                state: !lambda return action.c_str();
+      - text_sensor.template.publish:
+          id: ts_last_button_event
+          state: !lambda |-
+            char buffer[48];
+            snprintf(buffer, sizeof(buffer), "Button %d: %s (%d)", button, action.c_str(), count);
+            return std::string(buffer);
+
+  - id: handle_single_click
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "click"
+          count: 1
+      - switch.toggle: relay_1
+
+  - id: handle_long_press
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "long_press"
+          count: 1
+      - if:
+          condition:
+            lambda: return id(sl_button_1_long_press_action).state == "Relay 1 (toggle)";
+          then:
+            - switch.toggle: relay_1
+
+      - if:
+          condition:
+            lambda: return id(sl_button_1_long_press_action).state == "Home Assistant target (toggle)" && !id(txt_button_1_long_press_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.toggle
+                data:
+                  entity_id: !lambda return id(txt_button_1_long_press_target).state.c_str();
+
+      - if:
+          condition:
+            lambda: return id(sl_button_1_long_press_action).state == "Home Assistant target (turn on)" && !id(txt_button_1_long_press_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.turn_on
+                data:
+                  entity_id: !lambda return id(txt_button_1_long_press_target).state.c_str();
+
+      - if:
+          condition:
+            lambda: return id(sl_button_1_long_press_action).state == "Home Assistant target (turn off)" && !id(txt_button_1_long_press_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.turn_off
+                data:
+                  entity_id: !lambda return id(txt_button_1_long_press_target).state.c_str();
+
+  - id: start_button_press
+    mode: restart
+    parameters:
+      button: int
+    then:
+      - lambda: |-
+          if (button == 1) {
+            id(button_1_is_pressed) = true;
+            id(button_1_long_press_fired) = false;
+          }
+      - delay: !lambda return (uint32_t) id(num_button_1_long_press_ms).state;
+      - if:
+          condition:
+            lambda: return button == 1 && id(button_1_is_pressed) && !id(button_1_long_press_fired);
+          then:
+            - lambda: id(button_1_long_press_fired) = true;
+            - script.execute:
+                id: handle_long_press
+                button: !lambda return button;
+
+  - id: release_button_press
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - if:
+          condition:
+            lambda: return button == 1 && id(button_1_is_pressed);
+          then:
+            - lambda: id(button_1_is_pressed) = false;
+            - if:
+                condition:
+                  lambda: return !id(button_1_long_press_fired);
+                then:
+                  - script.execute:
+                      id: handle_single_click
+                      button: !lambda return button;
+            - lambda: id(button_1_long_press_fired) = false;
+
+select:
+  - platform: template
+    id: sl_button_1_long_press_action
+    name: Button 1 long-press action
+    optimistic: true
+    restore_value: true
+    icon: mdi:gesture-tap-hold
+    entity_category: config
+    options:
+      - None
+      - Relay 1 (toggle)
+      - Home Assistant target (toggle)
+      - Home Assistant target (turn on)
+      - Home Assistant target (turn off)
+    initial_option: None
+
+number:
+  - platform: template
+    id: num_button_1_long_press_ms
+    name: Button 1 long-press timer
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 250
+    max_value: 3000
+    step: 50
+    mode: box
+    initial_value: 700
+
+text:
+  - platform: template
+    id: txt_button_1_long_press_target
+    name: Button 1 long-press target
+    mode: text
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:form-textbox
+    initial_value: ""
+    min_length: 0
+    max_length: 100
+
+text_sensor:
+  - platform: template
+    id: ts_button_1_last_action
+    name: Button 1 last action
+    icon: mdi:gesture-tap
+    entity_category: diagnostic
+
+  - platform: template
+    id: ts_last_button_event
+    name: Last button event
+    icon: mdi:timeline-text-outline
+    entity_category: diagnostic
