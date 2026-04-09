@@ -1,0 +1,301 @@
+substitutions:
+  device_model: Sonoff TX 2G
+
+globals:
+  - id: button_1_tap_count
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: button_2_tap_count
+    type: int
+    restore_value: no
+    initial_value: "0"
+
+script:
+  - id: publish_button_event
+    mode: queued
+    parameters:
+      button: int
+      action: string
+      count: int
+    then:
+      - homeassistant.event:
+          event: esphome.sonoff_tx_button
+          data:
+            model: ${device_model}
+            action: !lambda return action.c_str();
+            button: !lambda return button;
+            count: !lambda return count;
+      - if:
+          condition:
+            lambda: return button == 1;
+          then:
+            - text_sensor.template.publish:
+                id: ts_button_1_last_action
+                state: !lambda return action.c_str();
+      - if:
+          condition:
+            lambda: return button == 2;
+          then:
+            - text_sensor.template.publish:
+                id: ts_button_2_last_action
+                state: !lambda return action.c_str();
+      - text_sensor.template.publish:
+          id: ts_last_button_event
+          state: !lambda |-
+            char buffer[48];
+            snprintf(buffer, sizeof(buffer), "Button %d: %s (%d)", button, action.c_str(), count);
+            return std::string(buffer);
+
+  - id: handle_single_tap
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "tap"
+          count: 1
+      - if:
+          condition:
+            lambda: return button == 1;
+          then:
+            - light.toggle: light_1
+      - if:
+          condition:
+            lambda: return button == 2;
+          then:
+            - light.toggle: light_2
+
+  - id: handle_double_tap
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - script.execute:
+          id: publish_button_event
+          button: !lambda return button;
+          action: "double_tap"
+          count: 2
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_tap_action).state == "Light 1 (toggle)";
+              return id(sl_button_2_double_tap_action).state == "Light 1 (toggle)";
+          then:
+            - light.toggle: light_1
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_tap_action).state == "Light 2 (toggle)";
+              return id(sl_button_2_double_tap_action).state == "Light 2 (toggle)";
+          then:
+            - light.toggle: light_2
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_tap_action).state == "Home Assistant target (toggle)" && !id(txt_button_1_double_tap_target).state.empty();
+              return id(sl_button_2_double_tap_action).state == "Home Assistant target (toggle)" && !id(txt_button_2_double_tap_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.toggle
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_tap_target).state.c_str();
+                    return id(txt_button_2_double_tap_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_tap_action).state == "Home Assistant target (turn on)" && !id(txt_button_1_double_tap_target).state.empty();
+              return id(sl_button_2_double_tap_action).state == "Home Assistant target (turn on)" && !id(txt_button_2_double_tap_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.turn_on
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_tap_target).state.c_str();
+                    return id(txt_button_2_double_tap_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_tap_action).state == "Home Assistant target (turn off)" && !id(txt_button_1_double_tap_target).state.empty();
+              return id(sl_button_2_double_tap_action).state == "Home Assistant target (turn off)" && !id(txt_button_2_double_tap_target).state.empty();
+          then:
+            - homeassistant.action:
+                action: homeassistant.turn_off
+                data:
+                  entity_id: !lambda |-
+                    if (button == 1) return id(txt_button_1_double_tap_target).state.c_str();
+                    return id(txt_button_2_double_tap_target).state.c_str();
+
+  - id: start_button_press
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - lambda: return;
+
+  - id: release_button_press
+    mode: queued
+    parameters:
+      button: int
+    then:
+      - if:
+          condition:
+            lambda: return button == 1;
+          then:
+            - lambda: id(button_1_tap_count) += 1;
+            - script.execute: resolve_button_1_taps
+      - if:
+          condition:
+            lambda: return button == 2;
+          then:
+            - lambda: id(button_2_tap_count) += 1;
+            - script.execute: resolve_button_2_taps
+
+  - id: resolve_button_1_taps
+    mode: restart
+    then:
+      - delay: !lambda return (uint32_t) id(num_button_1_double_tap_ms).state;
+      - if:
+          condition:
+            lambda: return id(button_1_tap_count) == 1;
+          then:
+            - script.execute:
+                id: handle_single_tap
+                button: 1
+      - if:
+          condition:
+            lambda: return id(button_1_tap_count) >= 2;
+          then:
+            - script.execute:
+                id: handle_double_tap
+                button: 1
+      - lambda: id(button_1_tap_count) = 0;
+
+  - id: resolve_button_2_taps
+    mode: restart
+    then:
+      - delay: !lambda return (uint32_t) id(num_button_2_double_tap_ms).state;
+      - if:
+          condition:
+            lambda: return id(button_2_tap_count) == 1;
+          then:
+            - script.execute:
+                id: handle_single_tap
+                button: 2
+      - if:
+          condition:
+            lambda: return id(button_2_tap_count) >= 2;
+          then:
+            - script.execute:
+                id: handle_double_tap
+                button: 2
+      - lambda: id(button_2_tap_count) = 0;
+
+select:
+  - platform: template
+    id: sl_button_1_double_tap_action
+    name: Button 1 double-tap action
+    optimistic: true
+    restore_value: true
+    icon: mdi:gesture-double-tap
+    entity_category: config
+    options:
+      - None
+      - Light 1 (toggle)
+      - Light 2 (toggle)
+      - Home Assistant target (toggle)
+      - Home Assistant target (turn on)
+      - Home Assistant target (turn off)
+    initial_option: None
+
+  - platform: template
+    id: sl_button_2_double_tap_action
+    name: Button 2 double-tap action
+    optimistic: true
+    restore_value: true
+    icon: mdi:gesture-double-tap
+    entity_category: config
+    options:
+      - None
+      - Light 1 (toggle)
+      - Light 2 (toggle)
+      - Home Assistant target (toggle)
+      - Home Assistant target (turn on)
+      - Home Assistant target (turn off)
+    initial_option: None
+
+number:
+  - platform: template
+    id: num_button_1_double_tap_ms
+    name: Button 1 double-tap timer
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 150
+    max_value: 1000
+    step: 25
+    mode: box
+    initial_value: 350
+
+  - platform: template
+    id: num_button_2_double_tap_ms
+    name: Button 2 double-tap timer
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-cog-outline
+    unit_of_measurement: ms
+    min_value: 150
+    max_value: 1000
+    step: 25
+    mode: box
+    initial_value: 350
+
+text:
+  - platform: template
+    id: txt_button_1_double_tap_target
+    name: Button 1 double-tap target
+    mode: text
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:form-textbox
+    initial_value: ""
+    min_length: 0
+    max_length: 100
+
+  - platform: template
+    id: txt_button_2_double_tap_target
+    name: Button 2 double-tap target
+    mode: text
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:form-textbox
+    initial_value: ""
+    min_length: 0
+    max_length: 100
+
+text_sensor:
+  - platform: template
+    id: ts_button_1_last_action
+    name: Button 1 last action
+    icon: mdi:gesture-tap
+    entity_category: diagnostic
+
+  - platform: template
+    id: ts_button_2_last_action
+    name: Button 2 last action
+    icon: mdi:gesture-tap
+    entity_category: diagnostic
+
+  - platform: template
+    id: ts_last_button_event
+    name: Last button event
+    icon: mdi:timeline-text-outline
+    entity_category: diagnostic
