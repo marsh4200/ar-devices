@@ -40,5 +40,5 @@ packages:
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/m5-1g.yaml
+    file: devices/m5/standard/m5-1g.yaml
     refresh: 0min
