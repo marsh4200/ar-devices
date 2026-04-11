@@ -4,7 +4,7 @@
 This repository contains ready-to-use ESPHome configurations and packages for AR Smart Home devices.
 
 ## Supported Devices
-- M5 Series (1G / 2G / 3G)
+- M5 Series (1G / 2G / 3G) (BLACK VERSION ONLY)
 - M5 Series With Long Press
 - M5 Series With Double Click
 - (OLD VERSION TX)
