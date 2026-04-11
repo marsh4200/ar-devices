@@ -60,6 +60,60 @@ script:
             snprintf(buffer, sizeof(buffer), "Button %d: %s (%d)", button, action.c_str(), count);
             return std::string(buffer);
 
+  - id: run_relay_momentary
+    mode: parallel
+    parameters:
+      relay: int
+      duration_ms: int
+    then:
+      - if:
+          condition:
+            lambda: return relay == 1;
+          then:
+            - switch.turn_on: relay_1
+      - if:
+          condition:
+            lambda: return relay == 2;
+          then:
+            - switch.turn_on: relay_2
+      - if:
+          condition:
+            lambda: return relay == 3;
+          then:
+            - switch.turn_on: relay_3
+      - delay: !lambda return (uint32_t) duration_ms;
+      - if:
+          condition:
+            lambda: return relay == 1;
+          then:
+            - switch.turn_off: relay_1
+      - if:
+          condition:
+            lambda: return relay == 2;
+          then:
+            - switch.turn_off: relay_2
+      - if:
+          condition:
+            lambda: return relay == 3;
+          then:
+            - switch.turn_off: relay_3
+
+  - id: run_homeassistant_momentary
+    mode: parallel
+    parameters:
+      entity_id: string
+      duration_ms: int
+    then:
+      - homeassistant.action:
+          action: homeassistant.turn_on
+          data:
+            entity_id: !lambda return entity_id.c_str();
+      - delay: !lambda return (uint32_t) duration_ms;
+      - homeassistant.action:
+          action: homeassistant.turn_off
+          data:
+            entity_id: !lambda return entity_id.c_str();
+
   - id: handle_single_click
     mode: queued
     parameters:
@@ -74,17 +128,44 @@ script:
           condition:
             lambda: return button == 1;
           then:
-            - switch.toggle: relay_1
+            - if:
+                condition:
+                  switch.is_on: sw_button_1_click_momentary_enabled
+                then:
+                  - script.execute:
+                      id: run_relay_momentary
+                      relay: 1
+                      duration_ms: !lambda return (int) (id(num_button_1_click_momentary_s).state * 1000.0f);
+                else:
+                  - switch.toggle: relay_1
       - if:
           condition:
             lambda: return button == 2;
           then:
-            - switch.toggle: relay_2
+            - if:
+                condition:
+                  switch.is_on: sw_button_2_click_momentary_enabled
+                then:
+                  - script.execute:
+                      id: run_relay_momentary
+                      relay: 2
+                      duration_ms: !lambda return (int) (id(num_button_2_click_momentary_s).state * 1000.0f);
+                else:
+                  - switch.toggle: relay_2
       - if:
           condition:
             lambda: return button == 3;
           then:
-            - switch.toggle: relay_3
+            - if:
+                condition:
+                  switch.is_on: sw_button_3_click_momentary_enabled
+                then:
+                  - script.execute:
+                      id: run_relay_momentary
+                      relay: 3
+                      duration_ms: !lambda return (int) (id(num_button_3_click_momentary_s).state * 1000.0f);
+                else:
+                  - switch.toggle: relay_3
 
   - id: handle_double_click
     mode: queued
@@ -125,6 +206,20 @@ script:
       - if:
           condition:
             lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 1 (momentary)";
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Relay 1 (momentary)";
+              return id(sl_button_3_double_click_action).state == "Relay 1 (momentary)";
+          then:
+            - script.execute:
+                id: run_relay_momentary
+                relay: 1
+                duration_ms: !lambda |-
+                  if (button == 1) return (int) (id(num_button_1_double_click_momentary_s).state * 1000.0f);
+                  if (button == 2) return (int) (id(num_button_2_double_click_momentary_s).state * 1000.0f);
+                  return (int) (id(num_button_3_double_click_momentary_s).state * 1000.0f);
+      - if:
+          condition:
+            lambda: |-
               if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 2 (toggle)";
               if (button == 2) return id(sl_button_2_double_click_action).state == "Relay 2 (toggle)";
               return id(sl_button_3_double_click_action).state == "Relay 2 (toggle)";
@@ -133,11 +228,39 @@ script:
       - if:
           condition:
             lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 2 (momentary)";
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Relay 2 (momentary)";
+              return id(sl_button_3_double_click_action).state == "Relay 2 (momentary)";
+          then:
+            - script.execute:
+                id: run_relay_momentary
+                relay: 2
+                duration_ms: !lambda |-
+                  if (button == 1) return (int) (id(num_button_1_double_click_momentary_s).state * 1000.0f);
+                  if (button == 2) return (int) (id(num_button_2_double_click_momentary_s).state * 1000.0f);
+                  return (int) (id(num_button_3_double_click_momentary_s).state * 1000.0f);
+      - if:
+          condition:
+            lambda: |-
               if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 3 (toggle)";
               if (button == 2) return id(sl_button_2_double_click_action).state == "Relay 3 (toggle)";
               return id(sl_button_3_double_click_action).state == "Relay 3 (toggle)";
           then:
             - switch.toggle: relay_3
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Relay 3 (momentary)";
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Relay 3 (momentary)";
+              return id(sl_button_3_double_click_action).state == "Relay 3 (momentary)";
+          then:
+            - script.execute:
+                id: run_relay_momentary
+                relay: 3
+                duration_ms: !lambda |-
+                  if (button == 1) return (int) (id(num_button_1_double_click_momentary_s).state * 1000.0f);
+                  if (button == 2) return (int) (id(num_button_2_double_click_momentary_s).state * 1000.0f);
+                  return (int) (id(num_button_3_double_click_momentary_s).state * 1000.0f);
       - if:
           condition:
             lambda: |-
@@ -180,6 +303,23 @@ script:
                     if (button == 1) return id(txt_button_1_double_click_target).state.c_str();
                     if (button == 2) return id(txt_button_2_double_click_target).state.c_str();
                     return id(txt_button_3_double_click_target).state.c_str();
+      - if:
+          condition:
+            lambda: |-
+              if (button == 1) return id(sl_button_1_double_click_action).state == "Home Assistant target (momentary)" && !id(txt_button_1_double_click_target).state.empty();
+              if (button == 2) return id(sl_button_2_double_click_action).state == "Home Assistant target (momentary)" && !id(txt_button_2_double_click_target).state.empty();
+              return id(sl_button_3_double_click_action).state == "Home Assistant target (momentary)" && !id(txt_button_3_double_click_target).state.empty();
+          then:
+            - script.execute:
+                id: run_homeassistant_momentary
+                entity_id: !lambda |-
+                  if (button == 1) return id(txt_button_1_double_click_target).state;
+                  if (button == 2) return id(txt_button_2_double_click_target).state;
+                  return id(txt_button_3_double_click_target).state;
+                duration_ms: !lambda |-
+                  if (button == 1) return (int) (id(num_button_1_double_click_momentary_s).state * 1000.0f);
+                  if (button == 2) return (int) (id(num_button_2_double_click_momentary_s).state * 1000.0f);
+                  return (int) (id(num_button_3_double_click_momentary_s).state * 1000.0f);
       - if:
           condition:
             lambda: |-
@@ -451,11 +591,15 @@ select:
     options:
       - None
       - Relay 1 (toggle)
+      - Relay 1 (momentary)
       - Relay 2 (toggle)
+      - Relay 2 (momentary)
       - Relay 3 (toggle)
+      - Relay 3 (momentary)
       - Home Assistant target (toggle)
       - Home Assistant target (turn on)
       - Home Assistant target (turn off)
+      - Home Assistant target (momentary)
       - Cover target (open)
       - Cover target (close)
       - Cover target (stop)
@@ -480,11 +624,15 @@ select:
     options:
       - None
       - Relay 1 (toggle)
+      - Relay 1 (momentary)
       - Relay 2 (toggle)
+      - Relay 2 (momentary)
       - Relay 3 (toggle)
+      - Relay 3 (momentary)
       - Home Assistant target (toggle)
       - Home Assistant target (turn on)
       - Home Assistant target (turn off)
+      - Home Assistant target (momentary)
       - Cover target (open)
       - Cover target (close)
       - Cover target (stop)
@@ -509,11 +657,15 @@ select:
     options:
       - None
       - Relay 1 (toggle)
+      - Relay 1 (momentary)
       - Relay 2 (toggle)
+      - Relay 2 (momentary)
       - Relay 3 (toggle)
+      - Relay 3 (momentary)
       - Home Assistant target (toggle)
       - Home Assistant target (turn on)
       - Home Assistant target (turn off)
+      - Home Assistant target (momentary)
       - Cover target (open)
       - Cover target (close)
       - Cover target (stop)
@@ -527,6 +679,31 @@ select:
       - Button target (press)
       - Automation target (trigger)
     initial_option: None
+
+switch:
+  - platform: template
+    id: sw_button_1_click_momentary_enabled
+    name: Button 1 click momentary
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    icon: mdi:gesture-tap-button
+
+  - platform: template
+    id: sw_button_2_click_momentary_enabled
+    name: Button 2 click momentary
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    icon: mdi:gesture-tap-button
+
+  - platform: template
+    id: sw_button_3_click_momentary_enabled
+    name: Button 3 click momentary
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    icon: mdi:gesture-tap-button
 
 number:
   - platform: template
@@ -570,6 +747,90 @@ number:
     step: 25
     mode: box
     initial_value: 350
+
+  - platform: template
+    id: num_button_1_click_momentary_s
+    name: Button 1 click momentary time
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-outline
+    unit_of_measurement: s
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    mode: box
+    initial_value: 1
+
+  - platform: template
+    id: num_button_2_click_momentary_s
+    name: Button 2 click momentary time
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-outline
+    unit_of_measurement: s
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    mode: box
+    initial_value: 1
+
+  - platform: template
+    id: num_button_3_click_momentary_s
+    name: Button 3 click momentary time
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-outline
+    unit_of_measurement: s
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    mode: box
+    initial_value: 1
+
+  - platform: template
+    id: num_button_1_double_click_momentary_s
+    name: Button 1 double-click momentary time
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-outline
+    unit_of_measurement: s
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    mode: box
+    initial_value: 1
+
+  - platform: template
+    id: num_button_2_double_click_momentary_s
+    name: Button 2 double-click momentary time
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-outline
+    unit_of_measurement: s
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    mode: box
+    initial_value: 1
+
+  - platform: template
+    id: num_button_3_double_click_momentary_s
+    name: Button 3 double-click momentary time
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-outline
+    unit_of_measurement: s
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    mode: box
+    initial_value: 1
 
 text:
   - platform: template

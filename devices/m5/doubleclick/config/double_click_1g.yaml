@@ -36,6 +36,40 @@ script:
             snprintf(buffer, sizeof(buffer), "Button %d: %s (%d)", button, action.c_str(), count);
             return std::string(buffer);
 
+  - id: run_relay_momentary
+    mode: parallel
+    parameters:
+      relay: int
+      duration_ms: int
+    then:
+      - if:
+          condition:
+            lambda: return relay == 1;
+          then:
+            - switch.turn_on: relay_1
+      - delay: !lambda return (uint32_t) duration_ms;
+      - if:
+          condition:
+            lambda: return relay == 1;
+          then:
+            - switch.turn_off: relay_1
+
+  - id: run_homeassistant_momentary
+    mode: parallel
+    parameters:
+      entity_id: string
+      duration_ms: int
+    then:
+      - homeassistant.action:
+          action: homeassistant.turn_on
+          data:
+            entity_id: !lambda return entity_id.c_str();
+      - delay: !lambda return (uint32_t) duration_ms;
+      - homeassistant.action:
+          action: homeassistant.turn_off
+          data:
+            entity_id: !lambda return entity_id.c_str();
+
   - id: handle_single_click
     mode: queued
     parameters:
@@ -46,7 +80,16 @@ script:
           button: !lambda return button;
           action: "click"
           count: 1
-      - switch.toggle: relay_1
+      - if:
+          condition:
+            switch.is_on: sw_button_1_click_momentary_enabled
+          then:
+            - script.execute:
+                id: run_relay_momentary
+                relay: 1
+                duration_ms: !lambda return (int) (id(num_button_1_click_momentary_s).state * 1000.0f);
+          else:
+            - switch.toggle: relay_1
 
   - id: handle_double_click
     mode: queued
@@ -63,6 +106,15 @@ script:
             lambda: return id(sl_button_1_double_click_action).state == "Relay 1 (toggle)";
           then:
             - switch.toggle: relay_1
+
+      - if:
+          condition:
+            lambda: return id(sl_button_1_double_click_action).state == "Relay 1 (momentary)";
+          then:
+            - script.execute:
+                id: run_relay_momentary
+                relay: 1
+                duration_ms: !lambda return (int) (id(num_button_1_double_click_momentary_s).state * 1000.0f);
 
       - if:
           condition:
@@ -90,6 +142,15 @@ script:
                 action: homeassistant.turn_off
                 data:
                   entity_id: !lambda return id(txt_button_1_double_click_target).state.c_str();
+
+      - if:
+          condition:
+            lambda: return id(sl_button_1_double_click_action).state == "Home Assistant target (momentary)" && !id(txt_button_1_double_click_target).state.empty();
+          then:
+            - script.execute:
+                id: run_homeassistant_momentary
+                entity_id: !lambda return id(txt_button_1_double_click_target).state;
+                duration_ms: !lambda return (int) (id(num_button_1_double_click_momentary_s).state * 1000.0f);
 
   - id: start_button_press
     mode: queued
@@ -138,10 +199,21 @@ select:
     options:
       - None
       - Relay 1 (toggle)
+      - Relay 1 (momentary)
       - Home Assistant target (toggle)
       - Home Assistant target (turn on)
       - Home Assistant target (turn off)
+      - Home Assistant target (momentary)
     initial_option: None
+
+switch:
+  - platform: template
+    id: sw_button_1_click_momentary_enabled
+    name: Button 1 click momentary
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    icon: mdi:gesture-tap-button
 
 number:
   - platform: template
@@ -157,6 +229,34 @@ number:
     step: 25
     mode: box
     initial_value: 350
+
+  - platform: template
+    id: num_button_1_click_momentary_s
+    name: Button 1 click momentary time
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-outline
+    unit_of_measurement: s
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    mode: box
+    initial_value: 1
+
+  - platform: template
+    id: num_button_1_double_click_momentary_s
+    name: Button 1 double-click momentary time
+    optimistic: true
+    restore_value: true
+    entity_category: config
+    icon: mdi:timer-outline
+    unit_of_measurement: s
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    mode: box
+    initial_value: 1
 
 text:
   - platform: template
