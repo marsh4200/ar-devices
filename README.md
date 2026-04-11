@@ -20,9 +20,9 @@ This repository contains ready-to-use ESPHome configurations and packages for AR
 
 ---
 
-Standard click: each button now has Button X click momentary plus Button X click momentary time.
-Double click: action lists now include Relay X (momentary) and Home Assistant target (momentary), plus a per-button momentary time in seconds.
-Long press: same as double click, with momentary relay and Home Assistant target options plus per-button time.
+- Standard click: each button now has Button X click momentary plus Button X click momentary time.
+- Double click: action lists now include Relay X (momentary) and Home Assistant target (momentary), plus a per-button momentary time in seconds.
+- Long press: same as double click, with momentary relay and Home Assistant target options plus per-button time.
 
 ---
 
