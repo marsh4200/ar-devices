@@ -7,6 +7,7 @@ This repository contains ready-to-use ESPHome configurations and packages for AR
 - M5 Series (1G / 2G / 3G)
 - M5 Series With Long Press
 - M5 Series With Double Click
+- (OLD VERSION TX)
 - TX Series (1G / 2G / 3G)
 - TX Series With Double Tap
 - TX Series With Long Press
