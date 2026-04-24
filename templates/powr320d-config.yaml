@@ -40,4 +40,4 @@ packages:
   device:
     url: https://github.com/marsh4200/ar-devices
     ref: main
-    file: devices/powr320d.yaml
+    file: devices/pow/powr320d.yaml
