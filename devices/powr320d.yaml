@@ -32,19 +32,6 @@ uart:
   baud_rate: 4800
   parity: EVEN
 
-# ---------------------------
-
-# ---------------------------
-# BLE
-# ---------------------------
-bluetooth_proxy:
-  active: true
-
-esp32_ble_tracker:
-  scan_parameters:
-    interval: 1100ms
-    window: 1100ms
-    active: true
 
 # ---------------------------
 # SENSORS
