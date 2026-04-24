@@ -33,11 +33,6 @@ uart:
   parity: EVEN
 
 # ---------------------------
-# TIME
-# ---------------------------
-time:
-  - platform: homeassistant
-    id: homeassistant_time
 
 # ---------------------------
 # BLE
