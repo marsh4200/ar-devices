@@ -23,38 +23,42 @@ logger:
   level: INFO
   baud_rate: 115200
 
-# ---------------------------
-# UART (POWER CHIP)
-# ---------------------------
+bluetooth_proxy:
+  active: true
+
+esp32_ble_tracker:
+  scan_parameters:
+    interval: 900ms
+    window: 900ms
+    active: true
+
 uart:
   id: uart_bus
   rx_pin: GPIO16
   baud_rate: 4800
   parity: EVEN
 
+time:
+  - platform: homeassistant
+    id: homeassistant_time
 
-# ---------------------------
-# SENSORS
-# ---------------------------
 sensor:
   - platform: cse7766
     current:
-      name: "Current"
+      name: ${friendly_name} Current
       id: a_sensor
       filters:
-        - throttle_average: 2s
-
+        - throttle_average: ${update_interval}
     voltage:
-      name: "Voltage"
+      name: ${friendly_name} Voltage
       id: v_sensor
       filters:
-        - throttle_average: 2s
-
+        - throttle_average: ${update_interval}
     power:
-      name: "Power"
+      name: ${friendly_name} Power
       id: w_sensor
       filters:
-        - throttle_average: 2s
+        - throttle_average: ${update_interval}
       on_value_range:
         - above: 4.0
           then:
@@ -62,21 +66,21 @@ sensor:
         - below: 3.0
           then:
             - light.turn_off: switch_led
-
     energy:
-      name: "Energy"
+      name: ${friendly_name} Energy
       id: wh_sensor
       filters:
-        - throttle_average: 2s
+        - throttle_average: ${update_interval}
 
   - platform: total_daily_energy
-    name: "Daily Energy"
+    name: ${friendly_name} Total Daily Energy
     power_id: w_sensor
     filters:
       - multiply: 0.001
+    unit_of_measurement: kWh
 
   - platform: wifi_signal
-    name: "WiFi RSSI"
+    name: ${friendly_name} WiFi RSSI
     update_interval: 60s
 
   - platform: uptime
@@ -102,20 +106,17 @@ sensor:
               ).c_str();
 
   - platform: internal_temperature
-    name: "Internal Temp"
+    name: ${friendly_name} Internal Temperature
     id: esp32_temp
 
   - platform: template
-    name: "Power Factor"
+    name: ${friendly_name} Power Factor
     device_class: power_factor
     id: power_factor
     lambda: |-
       if (id(v_sensor).state == 0 || id(a_sensor).state == 0) return 0;
       return id(w_sensor).state / (id(v_sensor).state * id(a_sensor).state);
 
-# ---------------------------
-# BUTTON
-# ---------------------------
 binary_sensor:
   - platform: gpio
     pin:
@@ -125,12 +126,10 @@ binary_sensor:
     internal: true
     filters:
       - delayed_off: 10ms
-
     on_click:
       - max_length: 350ms
         then:
           - switch.toggle: relay_1
-
       - min_length: 360ms
         max_length: 3s
         then:
@@ -152,15 +151,12 @@ binary_sensor:
     internal: true
 
   - platform: template
-    name: "Load"
+    name: ${friendly_name} Load
     id: load_on
     lambda: |-
       if (isnan(id(w_sensor).state)) return {};
       return id(w_sensor).state > 4;
 
-# ---------------------------
-# DISPLAY
-# ---------------------------
 display:
   platform: tm1621
   id: tm1621_display
@@ -168,7 +164,6 @@ display:
   data_pin: GPIO14
   read_pin: GPIO26
   write_pin: GPIO27
-
   lambda: |-
     if (id(page).state) {
       it.display_voltage(true);
@@ -182,9 +177,6 @@ display:
       it.printf(1, "%.1f", id(w_sensor).state);
     }
 
-# ---------------------------
-# LED
-# ---------------------------
 output:
   - platform: ledc
     id: led
@@ -192,25 +184,9 @@ output:
       number: GPIO18
       inverted: true
 
-light:
-  - platform: monochromatic
-    id: switch_led
-    output: led
-    internal: true
-
-  - platform: status_led
-    id: wifi_status_led
-    internal: true
-    pin:
-      number: GPIO5
-      inverted: true
-
-# ---------------------------
-# RELAY (SAFE CONTROL)
-# ---------------------------
 switch:
   - platform: template
-    name: "Relay"
+    name: ${friendly_name}
     optimistic: true
     id: relay_1
     turn_off_action:
@@ -241,27 +217,35 @@ switch:
     interlock: [relay_off]
 
   - platform: restart
-    name: "Restart"
+    name: ${friendly_name} Restart
 
-# ---------------------------
-# TEXT
-# ---------------------------
 text_sensor:
   - platform: template
-    name: "Uptime"
+    name: ${friendly_name} Uptime
     id: uptime_human
+    icon: mdi:clock-start
 
   - platform: wifi_info
     ip_address:
-      name: "IP"
+      name: ${friendly_name} IP
     ssid:
-      name: "SSID"
+      name: ${friendly_name} SSID
     bssid:
-      name: "BSSID"
+      name: ${friendly_name} BSSID
 
-# ---------------------------
-# WIFI STATUS CHECK
-# ---------------------------
+light:
+  - platform: monochromatic
+    id: switch_led
+    output: led
+    internal: true
+
+  - platform: status_led
+    id: wifi_status_led
+    internal: true
+    pin:
+      number: GPIO5
+      inverted: true
+
 interval:
   - interval: 30s
     then:
