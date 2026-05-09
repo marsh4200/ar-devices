@@ -1,1 +1,194 @@
+esphome:
+  name: 4channel
+  project:
+    name: "AR Smart Home.4CH-R3"
+    version: "1.0.0"
 
+  on_boot:
+    priority: 600
+    then:
+      - if:
+          condition:
+            switch.is_on: relay1
+          then:
+            - light.turn_on: led1
+          else:
+            - light.turn_off: led1
+
+      - if:
+          condition:
+            switch.is_on: relay2
+          then:
+            - light.turn_on: led2
+          else:
+            - light.turn_off: led2
+
+      - if:
+          condition:
+            switch.is_on: relay3
+          then:
+            - light.turn_on: led3
+          else:
+            - light.turn_off: led3
+
+      - if:
+          condition:
+            switch.is_on: relay4
+          then:
+            - light.turn_on: led4
+          else:
+            - light.turn_off: led4
+
+esp8266:
+  board: esp8285
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+logger:
+
+api:
+
+ota:
+  - platform: esphome
+
+# ---------------------------
+# OUTPUTS
+# ---------------------------
+output:
+  - platform: gpio
+    pin: GPIO13
+    id: status_led_output
+
+# ---------------------------
+# LIGHTS
+# ---------------------------
+light:
+  - platform: binary
+    id: led1
+    name: "Relay 1 LED"
+    output: status_led_output
+
+  - platform: binary
+    id: led2
+    name: "Relay 2 LED"
+    output: status_led_output
+
+  - platform: binary
+    id: led3
+    name: "Relay 3 LED"
+    output: status_led_output
+
+  - platform: binary
+    id: led4
+    name: "Relay 4 LED"
+    output: status_led_output
+
+  - platform: status_led
+    name: "WiFi Status"
+    pin:
+      number: GPIO13
+      inverted: true
+
+# ---------------------------
+# RELAYS
+# ---------------------------
+switch:
+  - platform: gpio
+    name: "Relay 1"
+    pin: GPIO12
+    id: relay1
+    restore_mode: RESTORE_DEFAULT_OFF
+
+    on_turn_on:
+      - light.turn_on: led1
+
+    on_turn_off:
+      - light.turn_off: led1
+
+  - platform: gpio
+    name: "Relay 2"
+    pin: GPIO5
+    id: relay2
+    restore_mode: RESTORE_DEFAULT_OFF
+
+    on_turn_on:
+      - light.turn_on: led2
+
+    on_turn_off:
+      - light.turn_off: led2
+
+  - platform: gpio
+    name: "Relay 3"
+    pin: GPIO4
+    id: relay3
+    restore_mode: RESTORE_DEFAULT_OFF
+
+    on_turn_on:
+      - light.turn_on: led3
+
+    on_turn_off:
+      - light.turn_off: led3
+
+  - platform: gpio
+    name: "Relay 4"
+    pin: GPIO15
+    id: relay4
+    restore_mode: RESTORE_DEFAULT_OFF
+
+    on_turn_on:
+      - light.turn_on: led4
+
+    on_turn_off:
+      - light.turn_off: led4
+
+# ---------------------------
+# BUTTONS
+# ---------------------------
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button 1"
+
+    on_press:
+      - switch.toggle: relay1
+
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button 2"
+
+    on_press:
+      - switch.toggle: relay2
+
+  - platform: gpio
+    pin:
+      number: GPIO10
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button 3"
+
+    on_press:
+      - switch.toggle: relay3
+
+  - platform: gpio
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button 4"
+
+    on_press:
+      - switch.toggle: relay4
+
+# ---------------------------
+# PREFERENCES
+# ---------------------------
+preferences:
+  flash_write_interval: 1min
