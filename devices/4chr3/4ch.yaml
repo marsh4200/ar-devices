@@ -1,7 +1,7 @@
 esphome:
   name: 4channel
   project:
-    name: "AR Smart Home.4CH"
+    name: "AR Smart Home.4CH-R3"
     version: "1.0.0"
 
 esp8266:
