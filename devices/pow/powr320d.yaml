@@ -77,7 +77,7 @@ light:
 # ---------------------------
 switch:
   - platform: template
-    name: "Geyser"
+    name: "Relay 1"
     optimistic: true
     id: relay_1
     turn_off_action:
